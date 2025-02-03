@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christopher Portfolio Home Page</title>
+    <title>Bootstrap Landing Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -11,13 +12,16 @@
             background-color: #1a1a1a;
             color: #ffffff;
         }
+
         .theme-light {
             background-color: #ffffff;
             color: #000000;
         }
+
         .bg-neutral {
             background-color: #f8f9fa;
         }
+
         .phone-mockup {
             border: 8px solid #000;
             border-radius: 40px;
@@ -26,6 +30,7 @@
             height: 600px;
             margin: auto;
         }
+
         .phone-mockup::before {
             content: '';
             position: absolute;
@@ -37,6 +42,7 @@
             background: #000;
             border-radius: 10px;
         }
+
         .phone-display {
             background: #fff;
             height: 100%;
@@ -50,9 +56,11 @@
         }
     </style>
 </head>
+
 <body>
+
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm text">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <i class="bi bi-umbrella me-2"></i>
@@ -61,19 +69,9 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Pricing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">FAQ</a>
-                    </li>
-                </ul>
-                <div class="dropdown">
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+
+                <div class="dropdown ms-auto">
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         Theme
                     </button>
@@ -91,7 +89,7 @@
         <div class="container text-center">
             <h1 class="display-4 fw-bold mb-4">Creating Digital Excellence</h1>
             <p class="lead mx-auto" style="max-width: 600px;">
-                Showcasing expertise in web development, UI/UX design, and software engineering. 
+                Showcasing expertise in web development, UI/UX design, and software engineering.
                 Delivering innovative solutions to real-world problems.
             </p>
             <ul class="list-unstyled mt-4">
@@ -110,7 +108,7 @@
         <div class="container text-center">
             <h2 class="display-6 fw-bold mb-4">Skills & Expertise</h2>
             <p class="mx-auto mb-5" style="max-width: 600px;">
-                Leveraging modern technologies and best practices to create 
+                Leveraging modern technologies and best practices to create
                 impactful digital solutions that drive user engagement and business growth.
             </p>
             <div class="row justify-content-center g-4">
@@ -135,26 +133,31 @@
         <div class="container">
             <h2 class="text-center display-6 fw-bold mb-5">Why Work With Me?</h2>
             <p class="text-center mx-auto mb-5" style="max-width: 600px;">
-                I combine technical skills with creative problem-solving to deliver high-quality solutions tailored to client needs.
+                I combine technical skills with creative problem-solving to deliver high-quality solutions tailored to
+                client needs.
             </p>
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="accordion" id="skillsAccordion">
                         <div class="accordion-item">
                             <h3 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne">
                                     User-Centric Design
                                 </button>
                             </h3>
-                            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#skillsAccordion">
+                            <div id="collapseOne" class="accordion-collapse collapse show"
+                                data-bs-parent="#skillsAccordion">
                                 <div class="accordion-body">
-                                    Crafting intuitive and engaging digital experiences. Building apps users actually want to use.
+                                    Crafting intuitive and engaging digital experiences. Building apps users actually
+                                    want to use.
                                 </div>
                             </div>
                         </div>
                         <div class="accordion-item">
                             <h3 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTwo">
                                     Scalable Code
                                 </button>
                             </h3>
@@ -166,11 +169,13 @@
                         </div>
                         <div class="accordion-item">
                             <h3 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseThree">
                                     Industry Expertise
                                 </button>
                             </h3>
-                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#skillsAccordion">
+                            <div id="collapseThree" class="accordion-collapse collapse"
+                                data-bs-parent="#skillsAccordion">
                                 <div class="accordion-body">
                                     Proven experience in multiple technologies and frameworks.
                                 </div>
@@ -199,8 +204,8 @@
                         <div class="card-body">
                             <h3 class="card-title fw-bold">Skibidi Merch Ohio</h3>
                             <div class="mb-3">
-                                <s>$18</s> 
-                                <span class="display-6 fw-bold">$9</span> 
+                                <s>$18</s>
+                                <span class="display-6 fw-bold">$9</span>
                                 <small>CAD</small>
                             </div>
                             <ul class="list-unstyled">
@@ -220,8 +225,8 @@
                         <div class="card-body">
                             <h3 class="card-title fw-bold">Skibidi Merch Ohio</h3>
                             <div class="mb-3">
-                                <s>$18</s> 
-                                <span class="display-6 fw-bold">$9</span> 
+                                <s>$18</s>
+                                <span class="display-6 fw-bold">$9</span>
                                 <small>CAD</small>
                             </div>
                             <ul class="list-unstyled">
@@ -253,4 +258,5 @@
         }
     </script>
 </body>
+
 </html>
