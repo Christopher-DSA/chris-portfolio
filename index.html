@@ -169,7 +169,8 @@
     <style>
         .app-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            /* grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); */
+            grid-template-columns: 1fr; /* One full-width column */
             gap: 20px;
             padding: 20px;
             max-width: 280px;
@@ -202,13 +203,12 @@
             color: #ffffff;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 80px;
+            max-width: 20rem;
         }
 
         /* For luxury theme compatibility */
         .theme-luxury .app-icon {
-            background: #ffffff;
+            background: transparent;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 W
@@ -252,17 +252,17 @@ W
                 Showcasing expertise in web development, UI/UX design, and software engineering.
                 Delivering innovative solutions to real-world problems.
             </p>
-            <ul class="list-unstyled mt-4">
+            <ul class="list-unstyled mt-3">
                 <li><i class="bi bi-check2"></i> Custom solutions tailored to your needs</li>
                 <li><i class="bi bi-check2"></i> Responsive design for all devices</li>
                 <li><i class="bi bi-check2"></i> Fast, secure, and scalable code</li>
             </ul>
-            <a href="mailto:christopherdemmans797@gmail.com" class="btn btn-primary btn-lg rounded-pill mt-4">
+            <a href="mailto:christopherdemmans797@gmail.com" class="btn btn-primary btn-lg rounded-pill mt-3">
                 christopherdemmans797@gmail.com <i class="bi bi-envelope-fill"></i>
             </a>
             <!--Github link-->
             <a href="https://github.com/Christopher-DSA/Web-Dev-Portfolio"
-                class="btn btn-primary btn-lg rounded-pill mt-4">
+                class="btn btn-primary btn-lg rounded-pill mt-3">
                 Github <i class="bi bi-github"></i>
             </a>
         </div>
@@ -271,8 +271,8 @@ W
     <!-- Skills Section -->
     <section class="bg-neutral py-5">
         <div class="container text-center">
-            <h2 class="display-6 fw-bold mb-4">Skills & Expertise</h2>
-            <p class="mx-auto mb-5" style="max-width: 600px;">
+            <h2 class="display-6 fw-bold mb-3">Skills & Expertise</h2>
+            <p class="mx-auto mb-3" style="max-width: 600px;">
                 Leveraging modern technologies and best practices to create
                 impactful digital solutions that drive user engagement and business growth.
             </p>
@@ -296,8 +296,8 @@ W
     <!-- Why Work With Me Section -->
     <section class="py-5">
         <div class="container">
-            <h2 class="text-center display-6 fw-bold mb-4">Why Work With Me?</h2>
-            <p class="text-center mx-auto mb-4" style="max-width: 400px;">
+            <h2 class="text-center display-6 fw-bold mb-3">Why Work With Me?</h2>
+            <p class="text-center mx-auto mb-3" style="max-width: 425px;">
                 I combine technical skills with creative problem-solving to deliver high-quality solutions tailored to
                 client needs.
             </p>
@@ -354,19 +354,28 @@ W
     </section>
     <section class="bg-neutral py-5">
         <div class="container text-center">
-            <h2 class="display-6 fw-bold mb-5">Projects I Have Worked On</h2>
+            <h2 class="display-6 fw-bold mb-3">Projects I Have Worked On</h2>
+            <p>Click an app below to view</p>
             <div class="col-lg-12">
-                <div class="phone-mockup mt-5">
+                <div class="phone-mockup">
                     <div class="phone-display">
                         <div class="d-flex flex-column align-items-center">
                             <div class="app-grid">
                                 <a href="https://refitmgmt.com/" class="app-icon-wrapper text-decoration-none">
                                     <div class="app-icon mb-2">
-                                        <i class="bi bi-app-indicator display-4"></i>
+                                        <!-- <i class="bi bi-app-indicator display-4"></i> -->
+                                        <img src="/static/img/refitLogo192.png" alt="REFit" class="img-fluid">
                                     </div>
                                     <p class="app-name mb-0">REFit</p>
                                 </a>
                                 <!-- Add more project icons as needed -->
+                                <a href="https://chromewebstore.google.com/detail/focus-mode-website-blocke/mfmecppjdgdjooajmdjdbmnojgopachl?hl=en-US&utm_source=ext_sidebar" class="app-icon-wrapper text-decoration-none">
+                                    <div class="app-icon mb-2">
+                                        <!-- <i class="bi bi-app-indicator display-4"></i> -->
+                                        <img src="/static/img/focusmodeIcon128.png" alt="REFit" class="img-fluid">
+                                    </div>
+                                    <p class="app-name mb-0">Website Blocker</p>
+                                </a>
                             </div>
                         </div>
                     </div>
