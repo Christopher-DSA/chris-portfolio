@@ -170,7 +170,8 @@
         .app-grid {
             display: grid;
             /* grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); */
-            grid-template-columns: 1fr; /* One full-width column */
+            grid-template-columns: 1fr;
+            /* One full-width column */
             gap: 20px;
             padding: 20px;
             max-width: 280px;
@@ -211,8 +212,8 @@
             background: transparent;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
-W
-        .theme-luxury .app-name {
+
+        W .theme-luxury .app-name {
             color: #ffffff;
         }
     </style>
@@ -224,10 +225,10 @@ W
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm text">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="bi bi-umbrella-fill me-2"></i>
+                <!-- <i class="bi bi-umbrella-fill me-2"></i> -->
                 <span class="fw-bold">Christopher Demmans</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler d-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
@@ -257,14 +258,15 @@ W
                 <li><i class="bi bi-check2"></i> Responsive design for all devices</li>
                 <li><i class="bi bi-check2"></i> Fast, secure, and scalable code</li>
             </ul>
-            <a href="mailto:christopherdemmans797@gmail.com" class="btn btn-primary btn-lg rounded-pill mt-3">
-                christopherdemmans797@gmail.com <i class="bi bi-envelope-fill"></i>
-            </a>
-            <!--Github link-->
-            <a href="https://github.com/Christopher-DSA/Web-Dev-Portfolio"
-                class="btn btn-primary btn-lg rounded-pill mt-3">
-                Github <i class="bi bi-github"></i>
-            </a>
+            <div class="row">
+                <a href="mailto:christopherdemmans797@gmail.com" class="btn btn-primary btn-lg rounded-pill mt-3 fs-6">christopherdemmans797@gmail.com <i class="bi bi-envelope-fill"></i></a>
+                <!--Github link-->
+                <a href="https://github.com/Christopher-DSA/Web-Dev-Portfolio"
+                    class="btn btn-primary btn-lg rounded-pill mt-3 fs-6">
+                    Github <i class="bi bi-github"></i>
+                </a>
+            </div>
+
         </div>
     </section>
 
@@ -369,7 +371,8 @@ W
                                     <p class="app-name mb-0">REFit</p>
                                 </a>
                                 <!-- Add more project icons as needed -->
-                                <a href="https://chromewebstore.google.com/detail/focus-mode-website-blocke/mfmecppjdgdjooajmdjdbmnojgopachl?hl=en-US&utm_source=ext_sidebar" class="app-icon-wrapper text-decoration-none">
+                                <a href="https://chromewebstore.google.com/detail/focus-mode-website-blocke/mfmecppjdgdjooajmdjdbmnojgopachl?hl=en-US&utm_source=ext_sidebar"
+                                    class="app-icon-wrapper text-decoration-none">
                                     <div class="app-icon mb-2">
                                         <!-- <i class="bi bi-app-indicator display-4"></i> -->
                                         <img src="/static/img/focusmodeIcon128.png" alt="REFit" class="img-fluid">
@@ -383,7 +386,131 @@ W
             </div>
         </div>
     </section>
-    <section class="bg-neutral py-5 d-none">
+    <section id="skillLogos" class="py-5">
+        <div class="container">
+            <h2 class="text-center display-6 fw-bold mb-5">Frameworks and Technologies</h2>
+            
+            <!-- Using Bootstrap's responsive grid with automatic columns -->
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-4 justify-content-center">
+                <!-- Python -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                        <img src="/static/img/PythonLogoNew.png" alt="Python" class="img-fluid">
+                    </div>
+                </div>
+                <!-- Flask -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
+                        <img src="/static/img/flaskLogo.jpg" alt="Flask" class="img-fluid">
+                    </div>
+                </div>
+                <!-- Javascript -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                        <img src="/static/img/javascriptLogo.png" alt="Javascript" class="img-fluid">
+                    </div>
+                </div>
+                <!-- Chrome Dev Tools -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                        <img src="/static/img/chromeDevTools.jpg" alt="Chrome Dev Tools" class="img-fluid">
+                    </div>
+                </div>
+                <!-- WordPress -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
+                        <img src="/static/img/wordPressLogo.jpg" alt="Wordpress" class="img-fluid">
+                    </div>
+                </div>
+                <!-- Divi -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3" style="background-color: #7e32d3;">
+                        <img src="/static/img/diviLogo.png" alt="Divi" class="img-fluid">
+                    </div>
+                </div>
+                <!-- Stripe -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
+                        <img src="/static/img/stripeLogo.png" alt="Stripe" class="img-fluid">
+                    </div>
+                </div>
+                <!-- PWA -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                        <img src="/static/img/pwaNew.png" alt="PWA" class="img-fluid">
+                    </div>
+                </div>
+                <!-- WooCommerce -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
+                        <img src="/static/img/WooCommerceLogo.png" alt="WooCommerce" class="img-fluid">
+                    </div>
+                </div>
+                <!-- AWS -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                        <img src="/static/img/awsLogo.png" alt="AWS" class="img-fluid">
+                    </div>
+                </div>
+                <!-- Figma -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
+                        <img src="/static/img/figmaLogo.png" alt="Figma" class="img-fluid">
+                    </div>
+                </div>
+                <!-- Github -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
+                        <img src="/static/img/githubLogo.png" alt="Github" class="img-fluid">
+                    </div>
+                </div>
+                <!-- PostgresSQL -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
+                        <img src="/static/img/postgresSQL.png" alt="PostgresSQL" class="img-fluid">
+                    </div>
+                </div>
+                <!-- MySQL -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                        <img src="/static/img/mySQL.png" alt="MySQL" class="img-fluid">
+                    </div>
+                </div>
+                <!-- HTML5 -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
+                        <img src="/static/img/html5logo.png" alt="HTML5" class="img-fluid">
+                    </div>
+                </div>
+                <!-- VS Code -->
+                <div class="col">
+                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
+                        <img src="/static/img/vsCode.png" alt="VS Code" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+    
+            <div class="row mt-4">
+                <div class="col text-center">
+                    <h6 class="text-center">And many more...</h6>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- <div class="col-3">
+    <img src="/static/img/bootstrapLogo.png" alt="Bootstrap" class="img-fluid">
+    </div>
+    <div class="col-3">
+        <img src="/static/img/jqueryLogo.png" alt="JQuery" class="img-fluid">
+    </div>
+    <div class="col-3">
+        <img src="/static/img/gitLogo.png" alt="Git" class="img-fluid">
+    </div>
+    <div class="col-3">
+        <img src="/static/img/githubLogo.png" alt="Github" class="img-fluid">
+    </div> -->
+    <section class="d-none py-5">
         <div class="container">
             <h2 class="text-center display-6 fw-bold mb-5">Make your product a no-brainer purchase</h2>
             <div class="row justify-content-center g-4">
