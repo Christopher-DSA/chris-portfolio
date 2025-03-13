@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christopher Demmans Web Developer</title>
+    <title>3D Phone Mockup</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        .theme-dark {
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             background-color: #1a1a1a;
-            color: #ffffff;
         }
 
-        .theme-light {
-            background-color: #ffffff;
-            color: #000000;
-        }
-
-        .bg-neutral {
-            background-color: #f8f9fa;
+        .phone-container {
+            perspective: 1000px;
         }
 
         .phone-mockup {
-            border: 8px solid #ffffff;
-            border-radius: 40px;
-            position: relative;
             width: 300px;
             height: 600px;
-            margin: auto;
+            border-radius: 40px;
+            background-color: #000;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateY(15deg) rotateX(10deg);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 8px solid #ffffff;
         }
 
         .phone-mockup::before {
@@ -44,147 +44,34 @@
         }
 
         .phone-display {
-            background: #000000;
+            width: 100%;
             height: 100%;
-            padding: 20px;
-            border-radius: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            color: #000;
-        }
-    </style>
-    <style>
-        /* ... existing styles ... */
-
-        .theme-luxury {
-            background-color: #09090b;
-            color: #dca54c;
+            border-radius: 32px;
+            overflow: hidden;
+            background: linear-gradient(145deg, #121212, #1f1f1f);
         }
 
-        .theme-luxury .navbar {
-            background-color: #15151e !important;
-            border-bottom: 1px solid #a67c52;
-        }
-
-        .theme-luxury .nav-link {
-            color: #e2c4a0 !important;
-        }
-
-        .theme-luxury .navbar-brand {
-            color: #fae29f !important;
-        }
-
-        .theme-luxury .btn-secondary {
-            background-color: #15151e;
-            border-color: #a67c52;
-            color: #e2c4a0;
-        }
-
-        .theme-luxury .bg-neutral {
-            background-color: #15151e !important;
-            color: #fae29f !important;
-        }
-
-        .theme-luxury .card {
-            background-color: #1a1a2e;
-            border: 1px solid #a67c52;
-        }
-
-        .theme-luxury .accordion-button {
-            background-color: #15151e;
-            color: #e2c4a0;
-        }
-
-        .theme-luxury .accordion-button:not(.collapsed) {
-            background-color: #1a1a2e;
-            color: #d4af37;
-        }
-
-        .theme-luxury .btn-primary {
-            background-color: #121213;
-            border-color: #dca54c;
-            color: #dca54c;
-        }
-
-        .theme-luxury .btn-primary:hover {
-            background-color: #1a1a2e;
-            border-color: #a67c52;
-            color: #dca54c;
-        }
-
-        /* Enhanced Accordion Styles for Luxury Theme */
-        .theme-luxury .accordion-item {
-            background-color: #15151e;
-            border: 1px solid #a67c52;
-        }
-
-        .theme-luxury .accordion-button {
-            background-color: #15151e;
-            color: #e2c4a0;
-            border: none;
-        }
-
-        .theme-luxury .accordion-button:not(.collapsed) {
-            background-color: #1a1a2e;
-            color: #d4af37;
-            box-shadow: inset 0 -1px 0 #a67c52;
-        }
-
-        .theme-luxury .accordion-button:focus {
-            border-color: #d4af37;
-            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
-        }
-
-        .theme-luxury .accordion-button::after {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e2c4a0'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
-        }
-
-        .theme-luxury .accordion-button:not(.collapsed)::after {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23d4af37'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
-        }
-
-        .theme-luxury .accordion-body {
-            background-color: #1a1a2e;
-            color: #e2c4a0;
-            border-top: 1px solid rgba(166, 124, 82, 0.3);
-        }
-
-        .theme-luxury .accordion-button:hover {
-            background-color: #1c1c32;
-        }
-
-        .theme-luxury .accordion-item:first-of-type {
-            border-top-left-radius: 0.375rem;
-            border-top-right-radius: 0.375rem;
-        }
-
-        .theme-luxury .accordion-item:last-of-type {
-            border-bottom-left-radius: 0.375rem;
-            border-bottom-right-radius: 0.375rem;
-        }
-    </style>
-
-    <style>
         .app-grid {
             display: grid;
-            /* grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); */
-            grid-template-columns: 1fr;
-            /* One full-width column */
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
             padding: 20px;
-            max-width: 280px;
-            margin: 0 auto;
+            width: 80%;
         }
 
         .app-icon-wrapper {
+            text-decoration: none;
             color: inherit;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .app-icon-wrapper:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
+            box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.2);
         }
 
         .app-icon {
@@ -196,279 +83,55 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         .app-name {
             font-size: 0.9rem;
             color: #ffffff;
-            white-space: nowrap;
-            overflow: hidden;
-            max-width: 20rem;
-        }
-
-        /* For luxury theme compatibility */
-        .theme-luxury .app-icon {
-            background: transparent;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        W .theme-luxury .app-name {
-            color: #ffffff;
+            text-align: center;
+            margin-top: 5px;
         }
     </style>
 </head>
-
-<body class="theme-luxury">
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm text">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <!-- <i class="bi bi-umbrella-fill me-2"></i> -->
-                <span class="fw-bold">Christopher Demmans</span>
-            </a>
-            <button class="navbar-toggler d-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-
-                <div class="dropdown ms-auto d-none">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Theme
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="switchTheme('luxury')">Luxury</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <section class="bg-neutral py-5">
-        <div class="container text-center">
-            <h2 class="display-6 fw-bold mb-3">Projects I Have Worked On</h2>
-            <p>Click an app below to view</p>
-            <div class="col-lg-12">
-                <div class="phone-mockup">
-                    <div class="phone-display">
-                        <div class="d-flex flex-column align-items-center">
-                            <div class="app-grid">
-                                <a href="https://refitmgmt.com/" class="app-icon-wrapper text-decoration-none">
-                                    <div class="app-icon mb-2">
-                                        <!-- <i class="bi bi-app-indicator display-4"></i> -->
-                                        <img src="/static/img/refitLogo192.png" alt="REFit" class="img-fluid">
-                                    </div>
-                                    <p class="app-name mb-0">REFit</p>
-                                </a>
-                                <!-- Add more project icons as needed -->
-                                <a href="https://chromewebstore.google.com/detail/focus-mode-website-blocke/mfmecppjdgdjooajmdjdbmnojgopachl?hl=en-US&utm_source=ext_sidebar"
-                                    class="app-icon-wrapper text-decoration-none">
-                                    <div class="app-icon mb-2">
-                                        <!-- <i class="bi bi-app-indicator display-4"></i> -->
-                                        <img src="/static/img/focusmodeIcon128.png" alt="REFit" class="img-fluid">
-                                    </div>
-                                    <p class="app-name mb-0">Website Blocker</p>
-                                </a>
-
-                                <a href="todo-list-with-subtasks-editable.html"
-                                    class="app-icon-wrapper text-decoration-none">
-                                    <div class="app-icon mb-2">
-                                        <!-- <i class="bi bi-app-indicator display-4"></i> -->
-                                        <img src="/static/img/focusmodeIcon128.png" alt="REFit" class="img-fluid">
-                                    </div>
-                                    <p class="app-name mb-0">To-Do</p>
-                                </a>
-                            </div>
-                        </div>
+<body>
+    <div class="phone-container">
+        <div class="phone-mockup">
+            <div class="phone-display">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="app-grid" id="appGrid">
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    <section id="skillLogos" class="py-5">
-        <div class="container">
-            <h2 class="text-center display-6 fw-bold mb-5">Frameworks and Technologies</h2>
-            
-            <!-- Using Bootstrap's responsive grid with automatic columns -->
-            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-4 justify-content-center">
-                <!-- Python -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                        <img src="/static/img/pyLogo.jpg" alt="Python" class="img-fluid">
-                    </div>
-                </div>
-                <!-- Flask -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
-                        <img src="/static/img/flaskLogo.jpg" alt="Flask" class="img-fluid">
-                    </div>
-                </div>
-                <!-- Javascript -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                        <img src="/static/img/javascriptLogo.png" alt="Javascript" class="img-fluid">
-                    </div>
-                </div>
-                <!-- Chrome Dev Tools -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                        <img src="/static/img/chromeDevTools.jpg" alt="Chrome Dev Tools" class="img-fluid">
-                    </div>
-                </div>
-                <!-- WordPress -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
-                        <img src="/static/img/wordPressLogo.jpg" alt="Wordpress" class="img-fluid">
-                    </div>
-                </div>
-                <!-- Divi -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3" style="background-color: #7e32d3;">
-                        <img src="/static/img/diviLogo.png" alt="Divi" class="img-fluid">
-                    </div>
-                </div>
-                <!-- Stripe -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
-                        <img src="/static/img/stripeLogo.png" alt="Stripe" class="img-fluid">
-                    </div>
-                </div>
-                <!-- PWA -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                        <img src="/static/img/pwaNew.png" alt="PWA" class="img-fluid">
-                    </div>
-                </div>
-                <!-- WooCommerce -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
-                        <img src="/static/img/WooCommerceLogo.png" alt="WooCommerce" class="img-fluid">
-                    </div>
-                </div>
-                <!-- AWS -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                        <img src="/static/img/awsLogo.png" alt="AWS" class="img-fluid">
-                    </div>
-                </div>
-                <!-- Figma -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
-                        <img src="/static/img/figmaLogo.png" alt="Figma" class="img-fluid">
-                    </div>
-                </div>
-                <!-- Github -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
-                        <img src="/static/img/git.png" alt="Github" class="img-fluid">
-                    </div>
-                </div>
-                <!-- PostgresSQL -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
-                        <img src="/static/img/postgresSQL.png" alt="PostgresSQL" class="img-fluid">
-                    </div>
-                </div>
-                <!-- MySQL -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                        <img src="/static/img/mySQL.png" alt="MySQL" class="img-fluid">
-                    </div>
-                </div>
-                <!-- HTML5 -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3 bg-light">
-                        <img src="/static/img/html5logo.png" alt="HTML5" class="img-fluid">
-                    </div>
-                </div>
-                <!-- VS Code -->
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-center h-100 p-3">
-                        <img src="/static/img/vsCode.png" alt="VS Code" class="img-fluid">
-                    </div>
-                </div>
-            </div>
+    </div>
     
-            <div class="row mt-4">
-                <div class="col text-center">
-                    <h6 class="text-center">And many more...</h6>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- <div class="col-3">
-    <img src="/static/img/bootstrapLogo.png" alt="Bootstrap" class="img-fluid">
-    </div>
-    <div class="col-3">
-        <img src="/static/img/jqueryLogo.png" alt="JQuery" class="img-fluid">
-    </div>
-    <div class="col-3">
-        <img src="/static/img/gitLogo.png" alt="Git" class="img-fluid">
-    </div>
-    <div class="col-3">
-        <img src="/static/img/githubLogo.png" alt="Github" class="img-fluid">
-    </div> -->
-    <section class="d-none py-5">
-        <div class="container">
-            <h2 class="text-center display-6 fw-bold mb-5">Make your product a no-brainer purchase</h2>
-            <div class="row justify-content-center g-4">
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title fw-bold">Skibidi Merch Ohio</h3>
-                            <div class="mb-3">
-                                <s>$18</s>
-                                <span class="display-6 fw-bold">$9</span>
-                                <small>CAD</small>
-                            </div>
-                            <ul class="list-unstyled">
-                                <li><i class="bi bi-check2"></i> Pay once, use forever</li>
-                                <li><i class="bi bi-check2"></i> 1-minute no-code setup</li>
-                                <li><i class="bi bi-check2"></i> Increase conversion rate</li>
-                            </ul>
-                            <button class="btn btn-primary rounded-pill w-100">
-                                Get Skibidi <i class="bi bi-arrow-right"></i>
-                            </button>
-                            <p class="text-center small mt-2">Pay once. Access forever.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h3 class="card-title fw-bold">Skibidi Merch Ohio</h3>
-                            <div class="mb-3">
-                                <s>$18</s>
-                                <span class="display-6 fw-bold">$9</span>
-                                <small>CAD</small>
-                            </div>
-                            <ul class="list-unstyled">
-                                <li><i class="bi bi-check2"></i> Pay once, use forever</li>
-                                <li><i class="bi bi-check2"></i> 1-minute no-code setup</li>
-                                <li><i class="bi bi-check2"></i> Increase conversion rate</li>
-                            </ul>
-                            <button class="btn btn-primary rounded-pill w-100">
-                                Get Skibidi <i class="bi bi-arrow-right"></i>
-                            </button>
-                            <p class="text-center small mt-2">Pay once. Access forever.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function switchTheme(theme) {
-            // Remove all theme classes first
-            document.body.classList.remove('theme-light', 'theme-dark', 'theme-luxury');
+        const apps = [
+            { name: "REFit", url: "https://refitmgmt.com/", icon: "/static/img/refitLogo192.png" },
+            { name: "Website Blocker", url: "https://chromewebstore.google.com/detail/focus-mode-website-blocke/mfmecppjdgdjooajmdjdbmnojgopachl?hl=en-US&utm_source=ext_sidebar", icon: "/static/img/focusmodeIcon128.png" },
+            { name: "To-Do", url: "todo-list-with-subtasks-editable.html", icon: "/static/img/focusmodeIcon128.png" }
+        ];
 
-            // Add the selected theme class
-            document.body.classList.add(`theme-${theme}`);
+        function generateAppIcons() {
+            const appGrid = document.getElementById("appGrid");
+            apps.forEach(app => {
+                const appElement = document.createElement("a");
+                appElement.href = app.url;
+                appElement.className = "app-icon-wrapper";
+                appElement.innerHTML = `
+                    <div class="app-icon">
+                        <img src="${app.icon}" alt="${app.name}" class="img-fluid">
+                    </div>
+                    <p class="app-name">${app.name}</p>
+                `;
+                appGrid.appendChild(appElement);
+            });
         }
-    </script>
-</body>
 
+        generateAppIcons();
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
