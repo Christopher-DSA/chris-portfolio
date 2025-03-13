@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Master - To-Do List with Subtasks</title>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-hover: #4338CA;
+      --bg-color: #F9FAFB;
+      --card-bg: white;
+      --text: #1F2937;
+      --text-light: #6B7280;
+      --border: #E5E7EB;
+      --success: #10B981;
+      --delete: #EF4444;
+      --edit: #F59E0B;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .task-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.375rem;
+      font-size: 1rem;
+    }
+
+    input[type="text"]:focus {
+      outline: 2px solid var(--primary);
+      border-color: var(--primary);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .task-item {
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .task-title {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .task-completed .task-title {
+      text-decoration: line-through;
+      color: var(--text-light);
+    }
+
+    .checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .checkbox.checked {
+      background-color: var(--success);
+      border-color: var(--success);
+    }
+
+    .checkbox.checked::after {
+      content: "✓";
+      position: absolute;
+      color: white;
+      font-size: 0.875rem;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-small {
+      padding: 0.375rem 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .btn-delete {
+      background-color: var(--delete);
+    }
+
+    .btn-edit {
+      background-color: var(--edit);
+    }
+
+    .btn-add-subtask {
+      background-color: var(--text-light);
+    }
+
+    .subtasks {
+      margin-left: 2.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .subtask-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background-color: var(--bg-color);
+      border-radius: 0.375rem;
+    }
+
+    .subtask-title {
+      flex: 1;
+      font-size: 0.9375rem;
+    }
+
+    .subtask-completed .subtask-title {
+      text-decoration: line-through;
+      color: var(--text-light);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-light);
+    }
+
+    .subtask-input {
+      margin-left: 2.5rem;
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .task-edit-form, .subtask-edit-form {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .task-edit-form {
+      margin-left: 2rem;
+    }
+
+    .subtask-edit-form {
+      margin-left: 2.5rem;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-light);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Task Master</h1>
+      <p>A simple to-do list with subtasks</p>
+    </header>
+
+    <div class="card">
+      <div class="task-input">
+        <input type="text" id="new-task" placeholder="Add a new task...">
+        <button id="add-task">Add Task</button>
+      </div>
+      
+      <ul id="task-list" class="task-list">
+        <!-- Tasks will be added here dynamically -->
+      </ul>
+      
+      <div id="empty-state" class="empty-state">
+        <p>No tasks yet. Add a task to get started!</p>
+      </div>
+    </div>
+
+    <p class="note">Note: This to-do list works within the current browser session. Tasks will be reset if you refresh the page.</p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM elements
+      const newTaskInput = document.getElementById('new-task');
+      const addTaskButton = document.getElementById('add-task');
+      const taskList = document.getElementById('task-list');
+      const emptyState = document.getElementById('empty-state');
+      
+      // In-memory task array
+      let tasks = [];
+      
+      // Event Listeners
+      addTaskButton.addEventListener('click', addTask);
+      newTaskInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          addTask();
+        }
+      });
+      
+      // Functions
+      function addTask() {
+        const taskTitle = newTaskInput.value.trim();
+        
+        if (taskTitle) {
+          const newTask = {
+            id: Date.now().toString(),
+            title: taskTitle,
+            completed: false,
+            subtasks: []
+          };
+          
+          tasks.push(newTask);
+          renderTasks();
+          newTaskInput.value = '';
+        }
+      }
+      
+      function toggleTaskCompletion(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          task.completed = !task.completed;
+          renderTasks();
+        }
+      }
+      
+      function deleteTask(taskId) {
+        tasks = tasks.filter(task => task.id !== taskId);
+        renderTasks();
+      }
+      
+      function editTask(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        const taskElement = document.getElementById(`task-${taskId}`);
+        
+        if (!task || !taskElement) return;
+        
+        // Check if edit form already exists
+        if (document.getElementById(`task-edit-form-${taskId}`)) {
+          return;
+        }
+        
+        // Hide the task header
+        const taskHeader = taskElement.querySelector('.task-header');
+        taskHeader.style.display = 'none';
+        
+        // Create edit form
+        const editForm = document.createElement('div');
+        editForm.id = `task-edit-form-${taskId}`;
+        editForm.className = 'task-edit-form';
+        
+        editForm.innerHTML = `
+          <input type="text" id="edit-task-input-${taskId}" value="${task.title}">
+          <button class="btn-small" id="save-task-btn-${taskId}">Save</button>
+          <button class="btn-small btn-delete" id="cancel-edit-task-btn-${taskId}">Cancel</button>
+        `;
+        
+        // Insert after task header
+        taskHeader.after(editForm);
+        
+        // Focus the input and select all text
+        const editInput = document.getElementById(`edit-task-input-${taskId}`);
+        editInput.focus();
+        editInput.select();
+        
+        // Add event listeners
+        document.getElementById(`save-task-btn-${taskId}`).addEventListener('click', function() {
+          saveTaskEdit(taskId);
+        });
+        
+        document.getElementById(`cancel-edit-task-btn-${taskId}`).addEventListener('click', function() {
+          cancelTaskEdit(taskId);
+        });
+        
+        editInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            saveTaskEdit(taskId);
+          } else if (e.key === 'Escape') {
+            cancelTaskEdit(taskId);
+          }
+        });
+      }
+      
+      function saveTaskEdit(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        const editInput = document.getElementById(`edit-task-input-${taskId}`);
+        const newTitle = editInput.value.trim();
+        
+        if (newTitle && task) {
+          task.title = newTitle;
+          renderTasks();
+        } else {
+          cancelTaskEdit(taskId);
+        }
+      }
+      
+      function cancelTaskEdit(taskId) {
+        const taskElement = document.getElementById(`task-${taskId}`);
+        if (!taskElement) return;
+        
+        // Show the task header
+        const taskHeader = taskElement.querySelector('.task-header');
+        if (taskHeader) {
+          taskHeader.style.display = 'flex';
+        }
+        
+        // Remove the edit form
+        const editForm = document.getElementById(`task-edit-form-${taskId}`);
+        if (editForm) {
+          editForm.remove();
+        }
+      }
+      
+      function addSubtask(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        const taskElement = document.getElementById(`task-${taskId}`);
+        
+        // Check if subtask input already exists
+        if (document.getElementById(`subtask-input-${taskId}`)) {
+          return;
+        }
+        
+        // Create subtask input
+        const subtaskInputDiv = document.createElement('div');
+        subtaskInputDiv.id = `subtask-input-${taskId}`;
+        subtaskInputDiv.className = 'subtask-input';
+        
+        subtaskInputDiv.innerHTML = `
+          <input type="text" id="new-subtask-${taskId}" placeholder="Add a subtask...">
+          <button class="btn-small" id="add-subtask-btn-${taskId}">Add</button>
+          <button class="btn-small btn-delete" id="cancel-add-subtask-btn-${taskId}">Cancel</button>
+        `;
+        
+        // Append after subtasks list or after task header if no subtasks
+        const subtasksContainer = taskElement.querySelector('.subtasks');
+        if (subtasksContainer) {
+          subtasksContainer.after(subtaskInputDiv);
+        } else {
+          taskElement.querySelector('.task-header').after(subtaskInputDiv);
+        }
+        
+        // Focus the input
+        document.getElementById(`new-subtask-${taskId}`).focus();
+        
+        // Add event listeners
+        document.getElementById(`add-subtask-btn-${taskId}`).addEventListener('click', function() {
+          saveSubtask(taskId);
+        });
+        
+        document.getElementById(`cancel-add-subtask-btn-${taskId}`).addEventListener('click', function() {
+          cancelAddSubtask(taskId);
+        });
+        
+        document.getElementById(`new-subtask-${taskId}`).addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            saveSubtask(taskId);
+          } else if (e.key === 'Escape') {
+            cancelAddSubtask(taskId);
+          }
+        });
+      }
+      
+      function cancelAddSubtask(taskId) {
+        const subtaskInput = document.getElementById(`subtask-input-${taskId}`);
+        if (subtaskInput) {
+          subtaskInput.remove();
+        }
+      }
+      
+      function saveSubtask(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        const subtaskInput = document.getElementById(`new-subtask-${taskId}`);
+        const subtaskTitle = subtaskInput.value.trim();
+        
+        if (subtaskTitle && task) {
+          const newSubtask = {
+            id: Date.now().toString(),
+            title: subtaskTitle,
+            completed: false
+          };
+          
+          task.subtasks.push(newSubtask);
+          renderTasks();
+        } else {
+          cancelAddSubtask(taskId);
+        }
+      }
+      
+      function editSubtask(taskId, subtaskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        const subtask = task.subtasks.find(s => s.id === subtaskId);
+        if (!subtask) return;
+        
+        const subtaskElement = document.querySelector(`#subtask-${subtaskId}`);
+        if (!subtaskElement) return;
+        
+        // Check if edit form already exists
+        if (document.getElementById(`subtask-edit-form-${subtaskId}`)) {
+          return;
+        }
+        
+        // Hide the subtask element content
+        subtaskElement.style.display = 'none';
+        
+        // Create edit form
+        const editForm = document.createElement('div');
+        editForm.id = `subtask-edit-form-${subtaskId}`;
+        editForm.className = 'subtask-edit-form';
+        
+        editForm.innerHTML = `
+          <input type="text" id="edit-subtask-input-${subtaskId}" value="${subtask.title}">
+          <button class="btn-small" id="save-subtask-btn-${subtaskId}">Save</button>
+          <button class="btn-small btn-delete" id="cancel-edit-subtask-btn-${subtaskId}">Cancel</button>
+        `;
+        
+        // Insert after subtask element
+        subtaskElement.after(editForm);
+        
+        // Focus the input and select all text
+        const editInput = document.getElementById(`edit-subtask-input-${subtaskId}`);
+        editInput.focus();
+        editInput.select();
+        
+        // Add event listeners
+        document.getElementById(`save-subtask-btn-${subtaskId}`).addEventListener('click', function() {
+          saveSubtaskEdit(taskId, subtaskId);
+        });
+        
+        document.getElementById(`cancel-edit-subtask-btn-${subtaskId}`).addEventListener('click', function() {
+          cancelSubtaskEdit(subtaskId);
+        });
+        
+        editInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            saveSubtaskEdit(taskId, subtaskId);
+          } else if (e.key === 'Escape') {
+            cancelSubtaskEdit(subtaskId);
+          }
+        });
+      }
+      
+      function saveSubtaskEdit(taskId, subtaskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        const subtask = task.subtasks.find(s => s.id === subtaskId);
+        if (!subtask) return;
+        
+        const editInput = document.getElementById(`edit-subtask-input-${subtaskId}`);
+        const newTitle = editInput.value.trim();
+        
+        if (newTitle) {
+          subtask.title = newTitle;
+          renderTasks();
+        } else {
+          cancelSubtaskEdit(subtaskId);
+        }
+      }
+      
+      function cancelSubtaskEdit(subtaskId) {
+        const subtaskElement = document.querySelector(`#subtask-${subtaskId}`);
+        if (!subtaskElement) return;
+        
+        // Show the subtask element
+        subtaskElement.style.display = 'flex';
+        
+        // Remove the edit form
+        const editForm = document.getElementById(`subtask-edit-form-${subtaskId}`);
+        if (editForm) {
+          editForm.remove();
+        }
+      }
+      
+      function toggleSubtaskCompletion(taskId, subtaskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          const subtask = task.subtasks.find(s => s.id === subtaskId);
+          if (subtask) {
+            subtask.completed = !subtask.completed;
+            renderTasks();
+          }
+        }
+      }
+      
+      function deleteSubtask(taskId, subtaskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          task.subtasks = task.subtasks.filter(subtask => subtask.id !== subtaskId);
+          renderTasks();
+        }
+      }
+      
+      function renderTasks() {
+        // Clear task list
+        taskList.innerHTML = '';
+        
+        // Show/hide empty state
+        if (tasks.length === 0) {
+          emptyState.style.display = 'block';
+        } else {
+          emptyState.style.display = 'none';
+          
+          // Render each task
+          tasks.forEach(task => {
+            const taskElement = document.createElement('li');
+            taskElement.id = `task-${task.id}`;
+            taskElement.className = `task-item ${task.completed ? 'task-completed' : ''}`;
+            
+            // Task header (checkbox, title, actions)
+            const taskHeader = document.createElement('div');
+            taskHeader.className = 'task-header';
+            
+            const checkbox = document.createElement('span');
+            checkbox.className = `checkbox ${task.completed ? 'checked' : ''}`;
+            checkbox.addEventListener('click', () => toggleTaskCompletion(task.id));
+            
+            const taskTitle = document.createElement('span');
+            taskTitle.className = 'task-title';
+            taskTitle.textContent = task.title;
+            
+            const taskActions = document.createElement('div');
+            taskActions.className = 'task-actions';
+            
+            const editTaskBtn = document.createElement('button');
+            editTaskBtn.className = 'btn-small btn-edit';
+            editTaskBtn.textContent = 'Edit';
+            editTaskBtn.addEventListener('click', () => editTask(task.id));
+            
+            const addSubtaskBtn = document.createElement('button');
+            addSubtaskBtn.className = 'btn-small btn-add-subtask';
+            addSubtaskBtn.textContent = '+ Subtask';
+            addSubtaskBtn.addEventListener('click', () => addSubtask(task.id));
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-small btn-delete';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.addEventListener('click', () => deleteTask(task.id));
+            
+            taskActions.appendChild(editTaskBtn);
+            taskActions.appendChild(addSubtaskBtn);
+            taskActions.appendChild(deleteBtn);
+            
+            taskHeader.appendChild(checkbox);
+            taskHeader.appendChild(taskTitle);
+            taskHeader.appendChild(taskActions);
+            
+            taskElement.appendChild(taskHeader);
+            
+            // Render subtasks if any
+            if (task.subtasks.length > 0) {
+              const subtasksContainer = document.createElement('div');
+              subtasksContainer.className = 'subtasks';
+              
+              task.subtasks.forEach(subtask => {
+                const subtaskElement = document.createElement('div');
+                subtaskElement.id = `subtask-${subtask.id}`;
+                subtaskElement.className = `subtask-item ${subtask.completed ? 'subtask-completed' : ''}`;
+                
+                const subtaskCheckbox = document.createElement('span');
+                subtaskCheckbox.className = `checkbox ${subtask.completed ? 'checked' : ''}`;
+                subtaskCheckbox.addEventListener('click', () => toggleSubtaskCompletion(task.id, subtask.id));
+                
+                const subtaskTitle = document.createElement('span');
+                subtaskTitle.className = 'subtask-title';
+                subtaskTitle.textContent = subtask.title;
+                
+                const subtaskActions = document.createElement('div');
+                subtaskActions.className = 'task-actions';
+                
+                const editSubtaskBtn = document.createElement('button');
+                editSubtaskBtn.className = 'btn-small btn-edit';
+                editSubtaskBtn.textContent = 'Edit';
+                editSubtaskBtn.addEventListener('click', () => editSubtask(task.id, subtask.id));
+                
+                const deleteSubtaskBtn = document.createElement('button');
+                deleteSubtaskBtn.className = 'btn-small btn-delete';
+                deleteSubtaskBtn.textContent = 'Delete';
+                deleteSubtaskBtn.addEventListener('click', () => deleteSubtask(task.id, subtask.id));
+                
+                subtaskActions.appendChild(editSubtaskBtn);
+                subtaskActions.appendChild(deleteSubtaskBtn);
+                
+                subtaskElement.appendChild(subtaskCheckbox);
+                subtaskElement.appendChild(subtaskTitle);
+                subtaskElement.appendChild(subtaskActions);
+                
+                subtasksContainer.appendChild(subtaskElement);
+              });
+              
+              taskElement.appendChild(subtasksContainer);
+            }
+            
+            taskList.appendChild(taskElement);
+          });
+        }
+      }
+
+      // Add some demo tasks
+      tasks = [
+        {
+          id: '1',
+          title: 'Complete project proposal',
+          completed: false,
+          subtasks: [
+            { id: '101', title: 'Research competition', completed: true },
+            { id: '102', title: 'Draft outline', completed: false }
+          ]
+        },
+        {
+          id: '2',
+          title: 'Grocery shopping',
+          completed: false,
+          subtasks: [
+            { id: '201', title: 'Vegetables', completed: false },
+            { id: '202', title: 'Milk and eggs', completed: false }
+          ]
+        }
+      ];
+
+      // Render initial tasks
+      renderTasks();
+    });
+  </script>
+</body>
+</html>
