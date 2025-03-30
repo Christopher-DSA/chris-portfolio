@@ -53,7 +53,7 @@ html, body {
 }
 
 #zone-info h3 {
-    color: #7482ff; /* Yellow for zone titles */
+    color: #ffffff; /* Yellow for zone titles */
     margin-bottom: 8px;
     border-bottom: 1px dashed #ffcc00; /* Add underline to title */
     padding-bottom: 4px;

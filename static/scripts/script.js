@@ -95,13 +95,15 @@ const zones = [
         info: `
             <p><strong>Lead Software Developer (Dec 2023 - Present)</strong></p>
             <ul>
-                <li>Built HVAC startup PWA (online/offline).</li>
+                <li>Built HVAC Web App for REFit. (online/offline).</li>
+                <li>Created a visually appealing website for REFit with a focus on user experience.</li>
                 <li>JavaScript QR Code decoding for equipment tracking.</li>
                 <li>Secure login & account system.</li>
                 <li>Python/MailGun API for automated emails (verification, password reset, compliance docs).</li>
                 <li>PostgreSQL DB setup & schema design.</li>
                 <li>Mailchimp campaigns (34.4% open rate).</li>
                 <li>Google Ads campaigns (8.5% CTR).</li>
+                <li><a href="https://refitmgmt.com/" target="_blank" style="color: #00ffff;">Visit REFit Website</a></li>
             </ul>
             <p><em>Skills: Python, JavaScript, PostgreSQL, REST APIs, PWA, Full-Stack Dev, Digital Marketing</em></p>
         `
@@ -125,12 +127,12 @@ const zones = [
         `
     },
     {
-        name: "Focus Mode Zone",
+        name: "Focus Mode Website Blocker: Chrome Extension Zone",
         position: new THREE.Vector3(25, 0, 0),
         radius: 6,
         color: 0xff00ff, // Magenta marker
         title: "Project: Focus Mode Extension",
-        iconUrl: 'https://placehold.co/300x300/ff00ff/png?text=Focus', // Magenta placeholder
+        iconUrl: 'static/img/focusmodeIcon128.png', // Magenta placeholder
         info: `
             <p><strong>Chrome Web Extension</strong></p>
             <ul>
