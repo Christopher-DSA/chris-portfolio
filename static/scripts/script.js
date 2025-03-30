@@ -49,7 +49,7 @@ scene.add(gridHelper);
 
 // --- Drone ---
 const droneGroup = new THREE.Group();
-const bodyGeometry = new THREE.BoxGeometry(1, 0.4, 1.5);
+const bodyGeometry = new THREE.BoxGeometry(1, 0.4, 1.5); // Width, Height, Depth
 const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0x00ffff, metalness: 0.6, roughness: 0.3 });
 const droneBody = new THREE.Mesh(bodyGeometry, bodyMaterial);
 droneBody.castShadow = true;
@@ -75,13 +75,14 @@ const zones = [
         // No iconUrl for the main hub for now
         info: `
             <p>Welcome to my interactive portfolio!</p>
-            <p>Controls: [WASD] Fly | [R/F] Altitude | [Shift] Sprint</p>
+            <p>Controls: [WASD] Fly | [R/F] Altitude | [Shift] Sprint | [Space] Barrel Roll</p> <!-- Added Space control info -->
             <p>Fly into the glowing zones to explore my projects.</p>
             <ul>
-                <li>REFit (Green)</li>
-                <li>Sofvie (Orange)</li>
-                <li>Website Blocker Chrome Extension (Magenta)</li>
-                <li>Skills/Education (Grey)</li>
+                <li>REFit (Green - Ground)</li>
+                <li>Sofvie (Orange - Ground)</li>
+                <li>Website Blocker (Magenta - Ground)</li>
+                <li>Skills/Education (Grey - Ground)</li>
+                <li>Sky Project (Yellow - Elevated)</li>
             </ul>
         `
     },
@@ -168,13 +169,13 @@ const zones = [
     },
     {
         name: "Sky Project Zone",
-        position: new THREE.Vector3(15, 5, -15), // Position: X=15, Y=15 (Elevated!), Z=-15
+        position: new THREE.Vector3(15, 10, -15), // Position: X=15, Y=10 (Elevated!), Z=-15
         radius: 5, // Maybe slightly smaller radius
         color: 0xffff00, // Yellow marker
         title: "Project: Sky Platform (Example)",
         iconUrl: 'https://placehold.co/300x300/ffff00/png?text=Sky', // Yellow placeholder
         info: `
-            <p><strong>Elecated Zone</strong></p>
+            <p><strong>Elevated Zone</strong></p>
             <ul>
                 <li>This project zone is positioned higher up.</li>
                 <li>Use [R] to ascend and reach it!</li>
@@ -199,13 +200,11 @@ zones.forEach(zoneData => {
         color: zoneData.color, transparent: true, opacity: 0.3, wireframe: true
     });
     const markerMesh = new THREE.Mesh(markerGeo, markerMat);
-    // Position uses the zone's X, Z and ADDS the zone's Y + small offset
     markerMesh.position.set(zoneData.position.x, zoneBaseY + 0.1, zoneData.position.z);
     zoneMarkers.add(markerMesh);
 
     // --- Point Light (For illumination) ---
     const pointLight = new THREE.PointLight(zoneData.color, 2, zoneData.radius * 1.5);
-    // Position uses the zone's X, Z and ADDS the zone's Y + light offset
     pointLight.position.set(zoneData.position.x, zoneBaseY + 1.5, zoneData.position.z);
     zoneData.pointLight = pointLight;
     zoneMarkers.add(pointLight);
@@ -216,7 +215,6 @@ zones.forEach(zoneData => {
         blending: THREE.AdditiveBlending, depthWrite: false
     });
     const glowMesh = new THREE.Mesh(glowSphereGeometry, glowMaterial);
-     // Position uses the zone's X, Z and ADDS the zone's Y + glow offset
     glowMesh.position.set(zoneData.position.x, zoneBaseY + 1.0, zoneData.position.z);
     zoneData.glowMesh = glowMesh;
     zoneMarkers.add(glowMesh);
@@ -228,7 +226,6 @@ zones.forEach(zoneData => {
             map: iconTexture, transparent: true, side: THREE.DoubleSide
         });
         const iconMesh = new THREE.Mesh(iconGeometry, iconMaterial);
-         // Position uses the zone's X, Z and ADDS the zone's Y + icon offset
         iconMesh.position.set(zoneData.position.x, zoneBaseY + iconYOffset, zoneData.position.z);
         zoneMarkers.add(iconMesh);
     }
@@ -247,7 +244,25 @@ const inertiaFactor = 0.05; // Lower = more drift/inertia
 let currentVelocity = new THREE.Vector3(0, 0, 0);
 let currentAngularVelocity = 0;
 
-document.addEventListener('keydown', (event) => { keysPressed[event.key.toLowerCase()] = true; });
+// Barrel Roll State Variables
+let isRolling = false;
+let rollStartTime = 0;
+const rollDuration = 0.6; // Duration of the barrel roll in seconds
+const rollAngle = Math.PI * 2; // Full 360 degrees roll (2 * PI radians)
+
+const clock = new THREE.Clock(); // Define clock globally for use in event listener and animate
+
+document.addEventListener('keydown', (event) => {
+    const key = event.key.toLowerCase();
+    keysPressed[key] = true;
+
+    // Trigger Barrel Roll on Space press (only if not already rolling)
+    if (key === ' ' && !isRolling) {
+        isRolling = true;
+        rollStartTime = clock.getElapsedTime(); // Record start time using the global clock
+    }
+});
+
 document.addEventListener('keyup', (event) => { keysPressed[event.key.toLowerCase()] = false; });
 window.addEventListener('blur', () => { Object.keys(keysPressed).forEach(key => keysPressed[key] = false); }); // Reset keys on window blur
 renderer.domElement.addEventListener('contextmenu', (event) => { event.preventDefault(); }); // Prevent right-click menu
@@ -261,6 +276,21 @@ const hubZone = zones.find(z => z.name === "Hub Zone"); // Get reference to Hub 
 // Function to update the info panel
 function updateZoneInfo(zone) {
     if (zone) {
+        // Update Hub zone info if it changed (to include Barrel Roll control)
+        if (zone.name === "Hub Zone" && !zone.info.includes("Barrel Roll")) {
+             zone.info = `
+                <p>Welcome to my interactive portfolio!</p>
+                <p>Controls: [WASD] Fly | [R/F] Altitude | [Shift] Sprint | [Space] Barrel Roll</p>
+                <p>Fly into the glowing zones to explore my projects.</p>
+                <ul>
+                    <li>REFit (Green - Ground)</li>
+                    <li>Sofvie (Orange - Ground)</li>
+                    <li>Website Blocker (Magenta - Ground)</li>
+                    <li>Skills/Education (Grey - Ground)</li>
+                    <li>Sky Project (Yellow - Elevated)</li>
+                </ul>
+            `;
+        }
         zoneInfoDiv.innerHTML = `<h3>${zone.title}</h3>${zone.info}`;
     } else {
         // Default text when not in a specific zone (exploring state)
@@ -273,7 +303,6 @@ if (hubZone) { currentZone = hubZone; updateZoneInfo(hubZone); }
 
 
 // --- Animation Loop ---
-const clock = new THREE.Clock();
 
 // Helper function to map a value from one range to another
 function mapRange(value, inMin, inMax, outMin, outMax) {
@@ -285,7 +314,7 @@ function mapRange(value, inMin, inMax, outMin, outMax) {
 function animate() {
     requestAnimationFrame(animate);
     const deltaTime = clock.getDelta();
-    const time = clock.getElapsedTime(); // Get total elapsed time for pulsing
+    const time = clock.getElapsedTime(); // Get total elapsed time
 
     // --- Determine Effective Speeds (Sprint Check) ---
     const isSprinting = keysPressed['shift'] || false;
@@ -297,103 +326,120 @@ function animate() {
     let targetAngularVelocity = 0;
     let altitudeChange = 0;
 
-    if (keysPressed['w']) targetVelocityZ = -effectiveMoveSpeed;
-    if (keysPressed['s']) targetVelocityZ = effectiveMoveSpeed;
-    if (keysPressed['a']) targetAngularVelocity = effectiveTurnSpeed;
-    if (keysPressed['d']) targetAngularVelocity = -effectiveTurnSpeed;
-    if (keysPressed['r']) altitudeChange = altitudeSpeed * deltaTime;
-    if (keysPressed['f']) altitudeChange = -altitudeSpeed * deltaTime;
+    // Don't allow movement/turning input during barrel roll for smoother animation
+    if (!isRolling) {
+        if (keysPressed['w']) targetVelocityZ = -effectiveMoveSpeed;
+        if (keysPressed['s']) targetVelocityZ = effectiveMoveSpeed;
+        if (keysPressed['a']) targetAngularVelocity = effectiveTurnSpeed;
+        if (keysPressed['d']) targetAngularVelocity = -effectiveTurnSpeed;
+        if (keysPressed['r']) altitudeChange = altitudeSpeed * deltaTime;
+        if (keysPressed['f']) altitudeChange = -altitudeSpeed * deltaTime;
+    } else {
+        // Optional: slightly decrease forward speed during roll?
+        // currentVelocity.z *= 0.98;
+    }
+
 
     // --- Interpolate Current Velocities Towards Target (Inertia) ---
     const lerpAmount = 1.0 - Math.pow(inertiaFactor, deltaTime); // Frame-rate independent lerp
     currentVelocity.z = THREE.MathUtils.lerp(currentVelocity.z, targetVelocityZ, lerpAmount);
     currentAngularVelocity = THREE.MathUtils.lerp(currentAngularVelocity, targetAngularVelocity, lerpAmount);
 
-    // --- Apply Smoothed Movement ---
-    drone.rotation.y += currentAngularVelocity * deltaTime;
+    // --- Apply Smoothed Movement (Position and Yaw Rotation) ---
+    drone.rotation.y += currentAngularVelocity * deltaTime; // Yaw (turning)
     const moveVector = new THREE.Vector3(0, 0, currentVelocity.z);
     moveVector.applyQuaternion(drone.quaternion); // Rotate move vector by drone's orientation
     drone.position.add(moveVector.multiplyScalar(deltaTime));
-    drone.position.y += altitudeChange;
+    drone.position.y += altitudeChange; // Altitude change
+
+    // --- Barrel Roll Logic ---
+    if (isRolling) {
+        const rollElapsedTime = time - rollStartTime;
+        const rollProgress = Math.min(rollElapsedTime / rollDuration, 1.0); // Progress from 0.0 to 1.0
+
+        // Apply rotation around the drone's local Z-axis (forward axis)
+        // Using a smooth step function can make the start/end less abrupt (optional)
+        const smoothRollProgress = THREE.MathUtils.smoothstep(rollProgress, 0, 1);
+        drone.rotation.z = -rollAngle * smoothRollProgress; // Clockwise roll
+
+        // Check if roll is finished
+        if (rollProgress >= 1.0) {
+            isRolling = false;
+            drone.rotation.z = 0; // IMPORTANT: Reset roll rotation precisely to zero
+        }
+    }
 
     // Clamp small velocities to zero to prevent drifting
     const stopThreshold = 0.01;
-    if (Math.abs(currentVelocity.z) < stopThreshold && Math.abs(targetVelocityZ) < stopThreshold) currentVelocity.z = 0;
-    if (Math.abs(currentAngularVelocity) < stopThreshold && Math.abs(targetAngularVelocity) < stopThreshold) currentAngularVelocity = 0;
+    if (!isRolling) { // Only stop if not rolling
+        if (Math.abs(currentVelocity.z) < stopThreshold && Math.abs(targetVelocityZ) < stopThreshold) currentVelocity.z = 0;
+        if (Math.abs(currentAngularVelocity) < stopThreshold && Math.abs(targetAngularVelocity) < stopThreshold) currentAngularVelocity = 0;
+    }
 
     // Keep drone within altitude bounds
     drone.position.y = Math.max(0.5, Math.min(drone.position.y, 20)); // Min 0.5, Max 20
 
     // --- Pulse Zone Lights & Glow Spheres ---
-    const pulseSpeed = 2.0;      // Speed of the pulse cycle
-    const baseIntensity = 1.5;   // Base brightness of the point light
-    const pulseAmplitude = 1.0;  // How much the point light brightness varies
-    const minIntensity = 0.3;    // Minimum intensity for the point light
-    const maxIntensity = baseIntensity + pulseAmplitude; // Max intensity for point light
-    const minGlowOpacity = 0.4;  // Minimum opacity for the glow sphere
-    const maxGlowOpacity = 0.9;  // Maximum opacity for the glow sphere
-
-    // Calculate base pulse value (sine wave oscillating between -1 and 1)
+    const pulseSpeed = 2.0;
+    const baseIntensity = 1.5;
+    const pulseAmplitude = 1.0;
+    const minIntensity = 0.3;
+    const maxIntensity = baseIntensity + pulseAmplitude;
+    const minGlowOpacity = 0.4;
+    const maxGlowOpacity = 0.9;
     const pulseFactor = Math.sin(time * pulseSpeed);
 
-    // Apply pulse to each zone's light and glow sphere using stored references
     zones.forEach(zone => {
         if (zone.pointLight && zone.glowMesh) {
-            // Map sine wave (-1 to 1) to the point light's intensity range
             const currentIntensity = mapRange(pulseFactor, -1, 1, minIntensity, maxIntensity);
             zone.pointLight.intensity = currentIntensity;
-
-            // Map sine wave (-1 to 1) to the glow sphere's opacity range
             const currentOpacity = mapRange(pulseFactor, -1, 1, minGlowOpacity, maxGlowOpacity);
             zone.glowMesh.material.opacity = currentOpacity;
         }
     });
 
     // --- Billboard Icons ---
-    // Iterate through the children of zoneMarkers specifically for icons
     zoneMarkers.children.forEach(child => {
-        // Check if it's an icon mesh using the shared geometry reference
         if (child.geometry === iconGeometry) {
-            child.lookAt(camera.position); // Make icon face the camera
+            child.lookAt(camera.position);
         }
-        // No need to billboard wireframe markers or glow spheres
     });
 
     // --- Simple Camera Follow ---
-    const cameraOffset = new THREE.Vector3(0, 5, 10); // How far behind and above the drone
-    // Calculate target position based on drone position and orientation
+    const cameraOffset = new THREE.Vector3(0, 5, 10);
     const targetPosition = drone.position.clone().add(cameraOffset.applyQuaternion(drone.quaternion));
-    const cameraLerpFactor = 1.0 - Math.pow(0.01, deltaTime); // Smoothing factor (lower = slower follow)
-    camera.position.lerp(targetPosition, cameraLerpFactor); // Smoothly move camera
-    // Make camera look slightly ahead of the drone for better feel
-    const lookAtTarget = drone.position.clone().add(new THREE.Vector3(0, 0, -2).applyQuaternion(drone.quaternion));
-    camera.lookAt(lookAtTarget); // Smoothly orient camera
+    // Apply barrel roll rotation to camera offset *if* drone is rolling, makes camera roll with drone
+    // if (isRolling) {
+    //     // This part is tricky and might need adjustment based on desired camera behavior during roll
+    //     // For now, let's keep the camera stable relative to the horizon during the roll
+    // }
+    const cameraLerpFactor = 1.0 - Math.pow(0.01, deltaTime);
+    camera.position.lerp(targetPosition, cameraLerpFactor);
+    const lookAtTarget = drone.position.clone().add(new THREE.Vector3(0, 0, -2).applyQuaternion(drone.quaternion)); // Look slightly ahead
+    // If rolling, keep camera looking at the drone's core position, not affected by roll? Or let it follow? Experiment needed.
+    // For simplicity, we'll let the standard lookAt handle it; the target position doesn't roll.
+    camera.lookAt(lookAtTarget);
 
     // --- Zone Interaction Logic ---
     let droneInAnyZone = false;
     for (const zone of zones) {
-        // Use XZ distance for zone check (ignore drone's height)
         const distanceXZ = new THREE.Vector2(drone.position.x - zone.position.x, drone.position.z - zone.position.z).length();
         if (distanceXZ < zone.radius) {
             droneInAnyZone = true;
-            if (currentZone !== zone) { // Only update if entering a *new* zone
+            if (currentZone !== zone) {
                 currentZone = zone;
-                updateZoneInfo(zone); // Update UI panel
+                updateZoneInfo(zone);
             }
-            break; // Drone can only be in one zone at a time
+            break;
         }
     }
-    // Check if the drone has left a specific zone
     if (!droneInAnyZone && currentZone !== null) {
-         // If the last zone WASN'T the hub, transition back to showing Hub info
          if (currentZone.name !== "Hub Zone") {
-             currentZone = hubZone; // Go back to the Hub state
+             currentZone = hubZone;
              updateZoneInfo(hubZone);
-         }
-         // If the last zone WAS the hub, transition to the generic 'exploring' state
-         else {
-              currentZone = null; // No specific zone is active
-              updateZoneInfo(null); // Show 'Exploring...' message
+         } else {
+              currentZone = null;
+              updateZoneInfo(null);
          }
     }
 
