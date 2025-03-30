@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christopher Demmans - Interactive Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Container for the 3D scene -->
+    <canvas id="bg"></canvas>
+
+    <!-- UI Overlay Panel -->
+    <div id="info-panel">
+        <h2>Christopher Demmans</h2>
+        <p>Interactive Portfolio & Resume</p>
+        <div id="controls-info">
+             <p>Controls: [WASD] Move Horizontally | [R] Ascend | [F] Descend</p>
+        </div>
+        <hr>
+        <div id="zone-info">
+            <!-- Zone-specific info will go here -->
+        </div>
+         <hr>
+         <p style="font-size: 0.8em; text-align: center;">
+            <a href="https://christopherdemmans.pages.dev/" target="_blank" style="color: #00ffff;">View Static Portfolio</a> |
+            <a href="[LINK_TO_YOUR_PDF_RESUME]" target="_blank" style="color: #00ffff;">Download PDF Resume</a> <!-- Add link to your PDF! -->
+         </p>
+    </div>
+
+    <!-- Import Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <!-- Your game script -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
