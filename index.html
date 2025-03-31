@@ -17,7 +17,7 @@
         }
 
         .phone-mockup {
-            width:px;
+            width: px;
             height: 950px;
             transform-style: preserve-3d;
             transition: transform 0.5s ease;
@@ -222,8 +222,6 @@
             margin-top: 0px;
             /* Add top margin for first app */
         }
-
-        
     </style>
     <style>
         .tooltip-text {
@@ -234,7 +232,8 @@
             padding: 5px 8px;
             border-radius: 5px;
             position: absolute;
-            left: 40px; /* Adjust position */
+            left: 40px;
+            /* Adjust position */
             top: 50%;
             transform: translateY(-50%);
             white-space: nowrap;
@@ -243,10 +242,45 @@
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
         }
-    
+
         a:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
+        }
+
+        .top-icon {
+            transition: transform 0.2s ease-in-out;
+            /* Smooth transition for scaling */
+            display: inline-block;
+            /* Ensures transform works correctly */
+        }
+
+        @keyframes iconLift {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            /* Start and end at normal position */
+            50% {
+                transform: translateY(-8px) scale(1.05);
+            }
+
+            /* Lift up slightly and scale a tiny bit */
+        }
+
+        .icon-is-lifting {
+            animation: iconLift 0.6s ease-in-out;
+            /* Apply the animation */
+        }
+
+        /* Ensure hover overrides the lift translation but keeps the scale */
+        .top-icon:hover {
+            transform: scale(1.2);
+            /* Keep existing scale hover */
+            animation: none;
+            /* Stop the lift animation immediately on hover */
         }
     </style>
 </head>
@@ -255,22 +289,23 @@
     <div class="container py-5">
         <div class="row justify-content-center d-flex">
             <div class="col-12">
-                <!--game controller icon that linkts to /webIncremental/game.html-->
+                <!--game controller icon that links to /webIncremental/game.html-->
                 <a href="/webIncremental/game.html" class="text-decoration-none text-reset">
-                    <i class="bi bi-controller fs-3 me-2" style="color: white; cursor: pointer;"></i>
+                    <i class="bi bi-controller fs-3 me-2 top-icon" style="color: white; cursor: pointer;"></i>
                 </a>
                 <!--<i class="bi bi-badge-3d-fill"></i> that links to /1index.html-->
                 <a href="/1index.html" class="text-decoration-none text-reset">
-                    <i class="bi bi-badge-3d-fill fs-3 me-2" style="color: white; cursor: pointer;"></i>
+                    <i class="bi bi-badge-3d-fill fs-3 me-2 top-icon" style="color: white; cursor: pointer;"></i>
                 </a>
-                <i onclick="window.location.href='https://github.com/Christopher-DSA'" class="bi bi-github fs-3 me-2"
-                    style="color: white; cursor: pointer;"></i>
+                <i onclick="window.location.href='https://github.com/Christopher-DSA'"
+                    class="bi bi-github fs-3 me-2 top-icon" style="color: white; cursor: pointer;"></i>
                 <a href="mailto:christopher473@outlook.com" style="color: white; text-decoration: none;">
-                    <i class="bi bi-envelope-at-fill fs-3 me-2" style="cursor: pointer;"></i>
+                    <i class="bi bi-envelope-at-fill fs-3 me-2 top-icon" style="cursor: pointer;"></i>
                 </a>
 
-                <a href="tel:+12899253329" style="color: white; text-decoration: none; position: relative; display: inline-block;">
-                    <i class="bi bi-telephone-fill fs-3" style="cursor: pointer;"></i>
+                <a href="tel:+12899253329"
+                    style="color: white; text-decoration: none; position: relative; display: inline-block;">
+                    <i class="bi bi-telephone-fill fs-3 top-icon" style="cursor: pointer;"></i>
                     <span class="tooltip-text">+1 (289) 925-3329</span>
                 </a>
             </div>
@@ -335,6 +370,88 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- New JavaScript for Idle Icon Animation ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const icons = document.querySelectorAll('.top-icon');
+            const iconContainer = icons[0]?.closest('.col-12'); // Get the parent container
+            let currentIconIndex = 0;
+            let intervalId = null;
+            let isHoveringContainer = false; // Flag to track hover over the container
+
+            // Function to apply animation to the current icon
+            function triggerIconAnimation() {
+                if (isHoveringContainer) return; // Don't animate if mouse is over the container
+
+                // Remove class from previously animated icon (if any)
+                icons.forEach(icon => icon.classList.remove('icon-is-lifting'));
+
+                // Add class to the current icon
+                if (icons.length > 0) {
+                    icons[currentIconIndex].classList.add('icon-is-lifting');
+
+                    // Move to the next icon index, looping back to 0
+                    currentIconIndex = (currentIconIndex + 1) % icons.length;
+                }
+            }
+
+            // Function to start the animation loop
+            function startIdleAnimation() {
+                if (intervalId) clearInterval(intervalId); // Clear existing interval if any
+                if (!isHoveringContainer && icons.length > 0) { // Only start if not hovering
+                    // Trigger immediately once, then set interval
+                    triggerIconAnimation();
+                    intervalId = setInterval(triggerIconAnimation, 800); // Adjust time (800ms) as needed
+                }
+            }
+
+            // Function to stop the animation loop
+            function stopIdleAnimation() {
+                clearInterval(intervalId);
+                intervalId = null;
+                // Ensure lift class is removed from all when stopping
+                icons.forEach(icon => icon.classList.remove('icon-is-lifting'));
+            }
+
+            // --- Event Listeners ---
+
+            if (iconContainer) {
+                // Mouse enters the container (area with icons)
+                iconContainer.addEventListener('mouseenter', () => {
+                    isHoveringContainer = true;
+                    stopIdleAnimation();
+                });
+
+                // Mouse leaves the container
+                iconContainer.addEventListener('mouseleave', () => {
+                    isHoveringContainer = false;
+                    // Important: Reset transform on icons that might have been hovered
+                    icons.forEach(icon => icon.style.transform = '');
+                    startIdleAnimation();
+                });
+            } else {
+                console.warn("Could not find the icon container element.");
+            }
+
+
+            // Ensure icons don't stay lifted if animation is interrupted by hover
+            icons.forEach(icon => {
+                icon.addEventListener('animationend', () => {
+                    icon.classList.remove('icon-is-lifting');
+                });
+                // Add mouseenter specifically to icons to ensure :hover style applies immediately
+                icon.addEventListener('mouseenter', () => {
+                    // No need to stopIdleAnimation here, container mouseenter does that
+                    // Just ensure the lift class is removed if somehow still present
+                    icon.classList.remove('icon-is-lifting');
+                });
+            });
+
+            // Start the animation initially
+            startIdleAnimation();
+        });
+        // --- End New JavaScript ---
+    </script>
 </body>
 
 </html>
