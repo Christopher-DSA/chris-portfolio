@@ -1,0 +1,200 @@
+/* style.css (v0.8 - QTE LoC Gain) */
+
+body {
+    /* Optional background */
+}
+
+.card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#status-area .alert {
+    margin-bottom: 0;
+}
+
+/* --- Code Editor Layering & Styling --- */
+.editor-container {
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Needed for absolute positioning of children */
+}
+
+/* NEW: LoC Indicator Container */
+.loc-indicator-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Covers the editor area */
+    pointer-events: none; /* Allows clicks to pass through */
+    overflow: hidden; /* Prevent indicators showing outside */
+    z-index: 3; /* Above editor input/display */
+}
+
+/* NEW: LoC Indicator Style */
+.loc-indicator {
+    position: absolute; /* Positioned relative to container */
+    color: #20c997; /* Teal / Success color */
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 2px 6px;
+    background-color: rgba(30, 30, 30, 0.7); /* Dark semi-transparent background */
+    border-radius: 4px;
+    white-space: nowrap; /* Prevent line breaks */
+    opacity: 1;
+    /* Center the indicator element on its calculated left/top */
+    transform: translate(-50%, -50%);
+    /* Transition for fade out and move up */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.loc-indicator.fade-out {
+    opacity: 0;
+    /* Move upwards as it fades */
+    transform: translate(-50%, -150%);
+}
+
+.editor-wrapper {
+    flex-grow: 1;
+    position: relative; /* Context for absolute children */
+    min-height: 150px; /* Match code-editor min-height */
+    background-color: #1e1e1e; /* Base background visible if needed */
+    border-radius: 4px; /* Match */
+}
+
+.code-editor {
+    /* Shared styles for both textarea and pre/code */
+    margin: 0;
+    padding: 10px !important;
+    font-family: Consolas, "Courier New", monospace !important;
+    font-size: 1em; /* Ensure consistent sizing */
+    line-height: 1.5 !important;
+    border: 1px solid #333 !important;
+    border-radius: 4px;
+    min-height: 150px; /* Ensure it has some initial height */
+    width: 100%;
+    height: 100%; /* Fill wrapper */
+    box-sizing: border-box; /* Include padding/border in size */
+    position: absolute; /* Layering */
+    top: 0;
+    left: 0;
+    overflow: auto; /* Allow scrolling */
+}
+
+.code-editor-input { /* The actual <textarea> */
+    z-index: 2; /* Above the display */
+    background: transparent !important;
+    color: transparent !important; /* Hide text, caret still works */
+    caret-color: #aeafad; /* VS Code-like cursor color */
+    resize: none !important; /* Disable manual resizing */
+}
+
+.code-editor-input:focus {
+    border-color: #007acc !important; /* Highlight focus like VS Code */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 1px #007acc !important;
+    outline: none !important;
+}
+
+.code-editor-display { /* The <pre> element for highlighting */
+    z-index: 1; /* Below the input */
+    background-color: #1e1e1e !important; /* Dark background */
+    color: #d4d4d4 !important; /* Default text color (for whitespace) */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    pointer-events: none; /* Clicks go through to textarea */
+    white-space: pre-wrap; /* Wrap text like textarea */
+    word-wrap: break-word; /* Break words like textarea */
+}
+
+/* Style for the code element INSIDE the pre */
+.code-editor-display code {
+    font-family: inherit !important;
+    line-height: inherit !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    /* Default color is inherited from pre */
+}
+
+/* Optional: Style for the word spans (now handled by inline style in JS) */
+/* .word-token { } */
+
+.code-editor-input::placeholder {
+    color: #6a6a6a !important;
+    font-style: italic;
+}
+
+/* --- Dark Scrollbar for BOTH Textarea and Pre --- */
+.code-editor::-webkit-scrollbar {
+    width: 8px;
+}
+.code-editor::-webkit-scrollbar-track {
+    background: #2a2a2a;
+    border-radius: 4px;
+}
+.code-editor::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+    border: 2px solid #2a2a2a; /* Creates padding around thumb */
+}
+.code-editor::-webkit-scrollbar-thumb:hover {
+    background-color: #777;
+}
+/* --- End Code Editor Styling --- */
+
+/* --- QTE Styling --- */
+.qte-prompt {
+    color: #ffc107; /* Warning color for prompt */
+    min-height: 1.5em; /* Ensure space exists */
+}
+
+.editor-wrapper.qte-active .code-editor-input {
+    border-color: #ffc107 !important; /* Yellow border */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 2px #ffc107 !important;
+}
+
+.editor-wrapper.qte-fail .code-editor-input {
+    border-color: #dc3545 !important; /* Red border on fail */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 0 2px #dc3545 !important;
+}
+/* --- End QTE Styling --- */
+
+
+/* Project progress bar styling */
+.project-progress {
+    height: 10px;
+}
+
+/* Tab styling */
+.nav-tabs .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+.tab-pane .border.rounded.p-2 {
+    padding: 0.5rem !important;
+}
+.tab-pane h6 {
+     font-size: 0.95rem;
+}
+
+/* Commit LoC input */
+.input-group-sm .form-control {
+    padding: 0.25rem 0.2rem;
+}
+.input-group-sm .btn {
+    padding: 0.25rem 0.4rem;
+}
+
+/* Scrollable areas */
+.tab-pane .overflow-auto {
+    max-height: calc(100vh - 200px); /* Adjust based on surrounding elements */
+}
+#projects-tab-pane .overflow-auto {
+     max-height: calc(100vh - 300px); /* Adjust based on surrounding elements */
+}
+
+/* Button icons */
+.btn-sm i {
+    margin-right: 3px;
+}
+.btn-sm.py-0 {
+    line-height: 1.2;
+}
