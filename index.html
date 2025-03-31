@@ -18,7 +18,7 @@
 
         .phone-mockup {
             width: px;
-            height: 950px;
+            height: 1200px;
             transform-style: preserve-3d;
             transition: transform 0.5s ease;
             position: relative;
@@ -297,6 +297,12 @@
                 <a href="/1index.html" class="text-decoration-none text-reset">
                     <i class="bi bi-badge-3d-fill fs-3 me-2 top-icon" style="color: white; cursor: pointer;"></i>
                 </a>
+
+                <!--<i class="bi bi-card-checklist"></i> that links to /fancy-to-do.html-->
+                <a href="/fancy-to-do.html" class="text-decoration-none text-reset">
+                    <i class="bi bi-card-checklist fs-3 me-2 top-icon" style="color: white; cursor: pointer;"></i>
+                </a>
+
                 <i onclick="window.location.href='https://github.com/Christopher-DSA'"
                     class="bi bi-github fs-3 me-2 top-icon" style="color: white; cursor: pointer;"></i>
                 <a href="mailto:christopher473@outlook.com" style="color: white; text-decoration: none;">
@@ -336,10 +342,11 @@
 
     <script>
         const apps = [
-            { name: "REFit", url: "https://refitmgmt.com/", icon: "/static/img/refitLogo192.png" },
+            { name: "REFit (Inventory Management Software)", url: "https://refitmgmt.com/", icon: "/static/img/refitLogo192.png" },
             { name: "Website Blocker (Chrome Extension)", url: "https://chromewebstore.google.com/detail/focus-mode-website-blocke/mfmecppjdgdjooajmdjdbmnojgopachl?hl=en-US&utm_source=ext_sidebar", icon: "/static/img/focusmodeIcon128.png" },
             { name: "Super Mario Bounce (Fan Game)", url: "https://scratch.mit.edu/projects/208665714", icon: "/static/img/192192MarioHat.png" },
-            { name: "Pet Growing Simulator (Roblox)", url: "https://www.roblox.com/games/3339384484/Pet-Growing-Simulator", icon: "/static/img/cat-icon-128.png" }
+            { name: "3D Resume/Portfolio Web Game", url: "1index.html", icon: "/static/img/3d-icon.jpg" },
+            { name: "Fancy To Do List Web App", url: "fancy-to-do.html", icon: "/static/img/fancy-to-do-icon.jpg" }
         ];
 
         function generateAppIcons() {

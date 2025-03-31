@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Archive Style To-Do List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Google Fonts (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* --- Root Variables --- */
+        :root {
+            --ba-blue-primary: #007bff;
+            --ba-blue-secondary: #3a8efd; /* Brighter blue */
+            --ba-blue-dark: #0e2e50;
+            --ba-blue-active-tab: #29486b; /* Darker blue for active 'All' tab */
+            --ba-blue-light: #e6f2ff;
+            --ba-pink-accent: #f06292; /* Pink for Challenges */
+            --ba-green-accent: #28a745;
+            --ba-yellow-accent: #ffc107;
+            --ba-purple-accent: #9575cd; /* Purple for Achievements */
+            --ba-orange-accent: #ffb74d; /* Orange for Weekly */
+            --ba-red-accent: #dc3545; /* Red for notification dot & delete */
+            --ba-text-light: #ffffff;
+            --ba-text-dark: #333333;
+            --ba-text-muted: #adb5bd;
+            --ba-border-color: rgba(255, 255, 255, 0.3);
+            --ba-bg-dark-transparent: rgba(14, 46, 80, 0.85);
+            --ba-bg-item: rgba(25, 60, 100, 0.7);
+            --ba-gray-disabled: #6c757d;
+        }
+
+        /* --- Body, Container, Form --- */
+        body {
+            background: url('https://via.placeholder.com/1920x1080/4a5a78/ffffff?text=Cool+Background+Here') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Poppins', sans-serif;
+            padding-top: 2rem;
+            color: var(--ba-text-light);
+        }
+        .todo-container {
+            max-width: 800px;
+            margin: auto;
+            background-color: var(--ba-bg-dark-transparent);
+            border: 1px solid var(--ba-border-color);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+        }
+        .add-task-form {
+            background-color: rgba(0,0,0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid var(--ba-border-color);
+        }
+        .add-task-form .form-control,
+        .add-task-form .form-select {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--ba-border-color);
+            color: var(--ba-text-light);
+        }
+        /* Handle browser autofill */
+         .add-task-form .form-control:-webkit-autofill,
+         .add-task-form .form-control:-webkit-autofill:hover,
+         .add-task-form .form-control:-webkit-autofill:focus,
+         .add-task-form .form-select:-webkit-autofill,
+         .add-task-form .form-select:-webkit-autofill:hover,
+         .add-task-form .form-select:-webkit-autofill:focus {
+             -webkit-text-fill-color: var(--ba-text-light);
+             -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.1) inset;
+             transition: background-color 5000s ease-in-out 0s;
+             caret-color: var(--ba-text-light); /* Cursor color */
+         }
+        .add-task-form .form-control::placeholder {
+            color: var(--ba-text-muted);
+        }
+        .add-task-form .form-select option {
+            background-color: var(--ba-blue-dark); /* Dropdown option background */
+            color: var(--ba-text-light);
+        }
+        .add-task-form .btn-add-task {
+            background-color: var(--ba-blue-secondary);
+            color: var(--ba-text-light);
+            font-weight: 600;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .add-task-form .btn-add-task:hover {
+            background-color: var(--ba-blue-primary);
+        }
+
+        /* --- Tab Styling --- */
+        .nav-tabs {
+            border-bottom: 2px solid var(--ba-blue-secondary);
+            margin-bottom: 20px;
+        }
+        .nav-tabs .nav-link {
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--ba-text-muted);
+            font-weight: 500;
+            padding: 10px 15px;
+            margin-right: 5px;
+            transition: all 0.3s ease;
+            border-radius: 5px 5px 0 0;
+            position: relative; /* Needed for absolute positioning of the dot */
+        }
+        .nav-tabs .nav-link:hover {
+            color: var(--ba-text-light);
+            border-bottom-color: rgba(58, 142, 253, 0.5);
+        }
+        .nav-tabs .nav-link.active {
+            /* Default active style for categories */
+            background-color: var(--ba-blue-secondary);
+            color: var(--ba-text-light);
+            border-color: var(--ba-blue-secondary);
+            font-weight: 600;
+        }
+        /* Specific active style for 'All' tab */
+        .nav-tabs .nav-link#all-tab.active {
+            background-color: var(--ba-blue-active-tab); /* Darker blue */
+            border-color: var(--ba-blue-active-tab);
+        }
+
+        /* Notification Dot Styling */
+        .notification-dot {
+             position: absolute;
+             /* Using Bootstrap classes for positioning */
+             display: none; /* Hide by default, JS will show it */
+        }
+
+        /* --- Tab Content Area & Scrollbar --- */
+         .tab-content {
+            min-height: 300px;
+            max-height: 45vh;
+            overflow-y: auto;
+            padding-right: 10px; /* Space for scrollbar */
+         }
+         /* Custom Scrollbar */
+         .tab-content::-webkit-scrollbar { width: 8px; }
+         .tab-content::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 4px; }
+         .tab-content::-webkit-scrollbar-thumb { background-color: var(--ba-blue-secondary); border-radius: 4px; border: 2px solid transparent; background-clip: content-box; }
+         .tab-content::-webkit-scrollbar-thumb:hover { background-color: var(--ba-blue-primary); }
+
+        /* --- Task Item, Badge, Actions, Empty Message --- */
+        .task-item {
+            background-color: var(--ba-bg-item);
+            border: 1px solid var(--ba-border-color);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s ease, opacity 0.3s ease;
+        }
+        .task-item:hover {
+             background-color: rgba(40, 80, 130, 0.8);
+        }
+        .task-item.completed {
+            opacity: 0.6; /* Slightly more faded */
+            background-color: rgba(14, 46, 80, 0.5);
+        }
+        .task-item.completed .task-description {
+            text-decoration: line-through;
+            color: var(--ba-text-muted);
+        }
+        .task-info {
+            flex-grow: 1;
+            margin-right: 15px;
+            display: flex; /* Use flexbox for badge alignment */
+            align-items: center; /* Vertically align badge and text */
+            gap: 8px; /* Space between badge and description */
+            min-width: 0; /* Prevent flex item overflow */
+        }
+        /* Category Badge Styling */
+        .task-category-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--ba-text-light);
+            text-transform: capitalize; /* Capitalize category name */
+            flex-shrink: 0; /* Prevent badge from shrinking */
+            white-space: nowrap; /* Prevent badge text wrapping */
+        }
+        /* Badge Colors */
+        .task-category-badge.category-daily { background-color: var(--ba-blue-secondary); }
+        .task-category-badge.category-weekly { background-color: var(--ba-orange-accent); color: var(--ba-text-dark); }
+        .task-category-badge.category-achievements { background-color: var(--ba-purple-accent); }
+        .task-category-badge.category-challenge { background-color: var(--ba-pink-accent); }
+
+        .task-description {
+            font-weight: 500;
+            font-size: 1rem;
+            color: var(--ba-text-light);
+            word-break: break-word; /* Wrap long task text */
+            overflow: hidden; /* Hide potential overflow */
+            text-overflow: ellipsis; /* Add ellipsis if text still overflows */
+        }
+        .task-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0; /* Prevent buttons from shrinking */
+        }
+        .task-actions .btn {
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.2s ease;
+            min-width: 80px;
+            text-align: center;
+        }
+         .task-actions .btn i { margin-right: 4px; }
+
+        .btn-complete { background-color: var(--ba-green-accent); color: var(--ba-text-light); }
+        .btn-complete:hover { background-color: #218838; color: var(--ba-text-light); transform: scale(1.05); }
+
+        .btn-incomplete { background-color: var(--ba-yellow-accent); color: var(--ba-text-dark); }
+        .btn-incomplete:hover { background-color: #ffda3a; color: var(--ba-text-dark); transform: scale(1.05); }
+
+        .btn-delete { background-color: var(--ba-red-accent); color: var(--ba-text-light); }
+        .btn-delete:hover { background-color: #c82333; color: var(--ba-text-light); transform: scale(1.05); }
+
+        /* Style for placeholder text when a tab is empty */
+        .empty-tab-message {
+            color: var(--ba-text-muted);
+            text-align: center;
+            padding: 40px 0;
+            font-style: italic;
+        }
+
+        body {
+            background: url('/static/img/nature.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container todo-container">
+        <h2 class="text-center mb-4" style="color: var(--ba-text-light);">Fancy Tasks List</h2>
+        <!--Small text that says your tasks will save for sebsequent visits-->
+        <p class="text-center" style="color: var(--ba-text-muted);">Your tasks will be saved for subsequent visits</p>
+
+        <!-- Add Task Form -->
+        <form id="addTaskForm" class="add-task-form">
+             <div class="row g-2 align-items-center">
+                <div class="col">
+                    <input type="text" id="taskInput" class="form-control" placeholder="Enter new task description..." required autocomplete="off">
+                </div>
+                <div class="col-auto">
+                     <select id="categorySelect" class="form-select">
+                        <option value="daily" selected>Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="achievements">Achievements</option>
+                        <option value="challenge">Challenge</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-add-task"><i class="fas fa-plus"></i> Add Task</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs" id="taskTabs" role="tablist">
+             <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-tab-pane" type="button" role="tab" aria-controls="all-tab-pane" aria-selected="true">
+                    All
+                    <!-- *** ADDED: Notification Dot for 'All' Tab *** -->
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger rounded-pill notification-dot">
+                         <span class="visually-hidden">New tasks</span>
+                    </span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="daily-tab" data-bs-toggle="tab" data-bs-target="#daily-tab-pane" type="button" role="tab" aria-controls="daily-tab-pane" aria-selected="false">
+                    Daily
+                    <!-- Notification Dot Span -->
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger rounded-pill notification-dot">
+                         <span class="visually-hidden">New tasks</span>
+                    </span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly-tab-pane" type="button" role="tab" aria-controls="weekly-tab-pane" aria-selected="false">
+                    Weekly
+                     <!-- Notification Dot Span -->
+                     <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger rounded-pill notification-dot">
+                         <span class="visually-hidden">New tasks</span>
+                     </span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="achievements-tab" data-bs-toggle="tab" data-bs-target="#achievements-tab-pane" type="button" role="tab" aria-controls="achievements-tab-pane" aria-selected="false">
+                    Achievements
+                     <!-- Notification Dot Span -->
+                     <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger rounded-pill notification-dot">
+                          <span class="visually-hidden">New tasks</span>
+                     </span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="challenge-tab" data-bs-toggle="tab" data-bs-target="#challenge-tab-pane" type="button" role="tab" aria-controls="challenge-tab-pane" aria-selected="false">
+                    Challenge
+                     <!-- Notification Dot Span -->
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger rounded-pill notification-dot">
+                         <span class="visually-hidden">New tasks</span>
+                     </span>
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tabs Content -->
+        <div class="tab-content" id="taskTabsContent">
+            <!-- All Tab Pane -->
+            <div class="tab-pane fade show active" id="all-tab-pane" role="tabpanel" aria-labelledby="all-tab" tabindex="0">
+                 <p class="empty-tab-message">No tasks added yet!</p>
+            </div>
+            <!-- Daily Tab Pane -->
+            <div class="tab-pane fade" id="daily-tab-pane" role="tabpanel" aria-labelledby="daily-tab" tabindex="0">
+                 <p class="empty-tab-message">No daily tasks yet!</p>
+            </div>
+            <!-- Weekly Tab Pane -->
+            <div class="tab-pane fade" id="weekly-tab-pane" role="tabpanel" aria-labelledby="weekly-tab" tabindex="0">
+                 <p class="empty-tab-message">No weekly tasks yet!</p>
+            </div>
+            <!-- Achievements Tab Pane -->
+            <div class="tab-pane fade" id="achievements-tab-pane" role="tabpanel" aria-labelledby="achievements-tab" tabindex="0">
+                 <p class="empty-tab-message">No achievements yet!</p>
+            </div>
+            <!-- Challenge Tab Pane -->
+            <div class="tab-pane fade" id="challenge-tab-pane" role="tabpanel" aria-labelledby="challenge-tab" tabindex="0">
+                  <p class="empty-tab-message">No challenge tasks yet!</p>
+            </div>
+        </div> <!-- End Tab Content -->
+
+    </div>
+
+    <!-- Bootstrap Bundle JS (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addTaskForm = document.getElementById('addTaskForm');
+            const taskInput = document.getElementById('taskInput');
+            const categorySelect = document.getElementById('categorySelect');
+            const taskTabsContent = document.getElementById('taskTabsContent');
+
+            // References to ALL notification dots, including the 'All' tab's dot
+            const notificationDots = {
+                all: document.querySelector('#all-tab .notification-dot'), // Added 'all'
+                daily: document.querySelector('#daily-tab .notification-dot'),
+                weekly: document.querySelector('#weekly-tab .notification-dot'),
+                achievements: document.querySelector('#achievements-tab .notification-dot'),
+                challenge: document.querySelector('#challenge-tab .notification-dot'),
+            };
+
+            // Load tasks from localStorage
+            let tasks = JSON.parse(localStorage.getItem('todoTasksBAStyleV4')) || []; // Updated key
+
+            // Function to save tasks
+            const saveTasks = () => {
+                localStorage.setItem('todoTasksBAStyleV4', JSON.stringify(tasks));
+            };
+
+            // Function to escape HTML
+            const escapeHTML = (str) => {
+                const div = document.createElement('div');
+                div.appendChild(document.createTextNode(str));
+                return div.innerHTML;
+            }
+
+            // Function to create task HTML element
+            const createTaskElement = (task, includeBadge = false) => {
+                const taskItem = document.createElement('div');
+                taskItem.classList.add('task-item');
+                taskItem.dataset.id = task.id;
+                if (task.completed) { taskItem.classList.add('completed'); }
+
+                const completeButtonClass = task.completed ? 'btn-incomplete' : 'btn-complete';
+                const completeButtonIcon = task.completed ? 'fa-rotate-left' : 'fa-check';
+                const completeButtonText = task.completed ? 'Undo' : 'Complete';
+                const badgeHTML = includeBadge ? `<span class="task-category-badge category-${task.category}">${escapeHTML(task.category)}</span>` : '';
+
+                taskItem.innerHTML = `
+                    <div class="task-info">
+                        ${badgeHTML}
+                        <div class="task-description">${escapeHTML(task.text)}</div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn ${completeButtonClass} btn-sm action-complete">
+                            <i class="fas ${completeButtonIcon}"></i> ${completeButtonText}
+                        </button>
+                        <button class="btn btn-delete btn-sm action-delete">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>`;
+                return taskItem;
+            };
+
+            // Function to render tasks and update dots
+            const renderTasks = () => {
+                // 1. Clear panes & messages
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    const category = pane.id.replace('-tab-pane', '');
+                    const message = category === 'all' ? 'No tasks added yet!' : `No ${category} tasks yet!`;
+                    pane.innerHTML = `<p class="empty-tab-message">${message}</p>`;
+                });
+
+                // 2. Hide all dots
+                Object.values(notificationDots).forEach(dot => {
+                    if (dot) dot.style.display = 'none';
+                });
+
+                // 3. Track category presence and overall task presence
+                const categoryHasTasks = { daily: false, weekly: false, achievements: false, challenge: false };
+                let anyCategoryHasTasks = false; // Flag for the 'All' tab dot
+                let totalTasksRendered = 0;
+
+                // 4. Loop & Render Tasks
+                tasks.forEach(task => {
+                    // Render to 'All' pane
+                    const taskElementForAll = createTaskElement(task, true);
+                    const allPane = document.getElementById('all-tab-pane');
+                    if (allPane) {
+                        if (totalTasksRendered === 0 && allPane.querySelector('.empty-tab-message')) { allPane.innerHTML = ''; }
+                        allPane.appendChild(taskElementForAll);
+                        totalTasksRendered++;
+                    }
+
+                    // Render to Specific Category Pane
+                    const taskElementForCategory = createTaskElement(task, false);
+                    const targetPane = document.getElementById(`${task.category}-tab-pane`);
+                    if (targetPane) {
+                        const emptyMessage = targetPane.querySelector('.empty-tab-message');
+                        if (emptyMessage) { targetPane.innerHTML = ''; }
+                        targetPane.appendChild(taskElementForCategory);
+
+                        // Mark category as having tasks AND set the overall flag
+                        if (task.category in categoryHasTasks) {
+                            categoryHasTasks[task.category] = true;
+                            anyCategoryHasTasks = true; // If any category gets a task, this becomes true
+                        }
+                    } else { console.warn(`Could not find tab pane for category: ${task.category}`); }
+                });
+
+                // 5. Update Category Dots
+                for (const category in categoryHasTasks) {
+                    // Use Object.prototype.hasOwnProperty.call for safer iteration if needed, though likely fine here
+                    if (categoryHasTasks[category] && notificationDots[category]) {
+                        notificationDots[category].style.display = 'block';
+                    }
+                }
+
+                // *** 6. Update 'All' Tab Dot ***
+                if (anyCategoryHasTasks && notificationDots.all) {
+                    notificationDots.all.style.display = 'block';
+                } else if (notificationDots.all) {
+                    notificationDots.all.style.display = 'none'; // Explicitly hide if no categories have tasks
+                }
+
+                 // 7. Handle 'All' tab empty message if needed
+                 if (totalTasksRendered === 0 && !document.getElementById('all-tab-pane').querySelector('.empty-tab-message')) {
+                     document.getElementById('all-tab-pane').innerHTML = `<p class="empty-tab-message">No tasks added yet!</p>`;
+                 }
+            };
+
+            // --- Event Listeners ---
+            // Add Task
+            addTaskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const taskText = taskInput.value.trim();
+                const taskCategory = categorySelect.value;
+                if (taskText === '') { alert('Please enter a task description.'); return; }
+                const newTask = { id: Date.now(), text: taskText, category: taskCategory, completed: false };
+                tasks.push(newTask);
+                saveTasks();
+                renderTasks(); // Re-render everything
+                taskInput.value = '';
+                taskInput.focus();
+            });
+
+            // Complete/Delete Task
+            taskTabsContent.addEventListener('click', (e) => {
+                const target = e.target;
+                const actionButton = target.closest('.action-complete, .action-delete');
+                const taskItem = target.closest('.task-item');
+                if (!actionButton || !taskItem) return;
+                const taskId = Number(taskItem.dataset.id);
+
+                if (actionButton.classList.contains('action-complete')) {
+                    tasks = tasks.map(task => task.id === taskId ? { ...task, completed: !task.completed } : task );
+                    saveTasks();
+                    renderTasks(); // Update UI and dots
+                }
+                if (actionButton.classList.contains('action-delete')) {
+                    if (confirm('Are you sure you want to delete this task?')) {
+                        tasks = tasks.filter(task => task.id !== taskId);
+                        saveTasks();
+                        renderTasks(); // Update UI and dots
+                    }
+                }
+            });
+
+            // --- Initial Render ---
+            renderTasks(); // Load tasks and set initial dot states
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>
