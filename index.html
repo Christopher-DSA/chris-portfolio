@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .phone-container {
-            perspective: 1200px;
+            perspective: 2000px;
             transform-style: preserve-3d;
             width: 300px;
             margin: 0 auto;
@@ -22,7 +22,7 @@
             transform-style: preserve-3d;
             transition: transform 0.5s ease;
             position: relative;
-            animation: floatingPhone 8s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+            animation: floatingPhone 1s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
         }
 
         @keyframes floatingPhone {
@@ -81,7 +81,7 @@
             bottom: 0;
             background: radial-gradient(ellipse at center, rgba(120, 120, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
             opacity: 0.7;
-            animation: screenGlow 8s ease-in-out infinite;
+            animation: screenGlow 3s ease-in-out infinite;
         }
 
         @keyframes screenGlow {
@@ -289,6 +289,11 @@
     <div class="container py-5">
         <div class="row justify-content-center d-flex">
             <div class="col-12">
+                <!--dollar sign icon that links to /FixMySalesPage.html-->
+                <a href="/FixMySalesPage.html" class="text-decoration-none text-reset">
+                    <i class="bi bi-currency-dollar fs-3 me-2 top-icon" style="color: white; cursor: pointer;"></i>
+                </a>
+
                 <!--game controller icon that links to /webIncremental/game.html-->
                 <a href="/webIncremental/game.html" class="text-decoration-none text-reset">
                     <i class="bi bi-controller fs-3 me-2 top-icon" style="color: white; cursor: pointer;"></i>
@@ -318,9 +323,8 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 text-center">
-                <h1 class="display-3 text-white"><a href="1index.html">Christopher Demmans</a></h1>
-                <p class="lead text-white">Welcome to my portfolio! Here you can find some of the projects I've worked
-                    on.</p>
+                <h1 class="display-3 text-white"><a href="1index.html" class="text-decoration-none text-white">Christopher Demmans</a></h1>
+                <p class="lead text-white">Welcome to my portfolio! Here you can find my work samples.</p>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -342,9 +346,10 @@
 
     <script>
         const apps = [
+            { name: "Fix My Sales Page", url: "FixMySalesPage.html", icon: "/static/img/FixMySales.jpg" },
             { name: "REFit (Inventory Management Software)", url: "https://refitmgmt.com/", icon: "/static/img/refitLogo192.png" },
             { name: "Website Blocker (Chrome Extension)", url: "https://chromewebstore.google.com/detail/focus-mode-website-blocke/mfmecppjdgdjooajmdjdbmnojgopachl?hl=en-US&utm_source=ext_sidebar", icon: "/static/img/focusmodeIcon128.png" },
-            { name: "Super Mario Bounce (Fan Game)", url: "https://scratch.mit.edu/projects/208665714", icon: "/static/img/192192MarioHat.png" },
+            // { name: "Super Mario Bounce (Fan Game)", url: "https://scratch.mit.edu/projects/208665714", icon: "/static/img/192192MarioHat.png" },
             { name: "3D Resume/Portfolio Web Game", url: "1index.html", icon: "/static/img/3d-icon.jpg" },
             { name: "Fancy To Do List Web App", url: "fancy-to-do.html", icon: "/static/img/fancy-to-do-icon.jpg" }
         ];
