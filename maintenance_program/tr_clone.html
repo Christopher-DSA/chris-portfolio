@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HVAC Job Tracker CRM</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      /* Type scale */
+      --font-size-xs: 0.75rem;
+      /* 12px - Smallest details, labels, badges */
+      --font-size-sm: 0.875rem;
+      /* 14px - Secondary info, metadata */
+      --font-size-base: 1rem;
+      /* 16px - Body text, form fields */
+      --font-size-md: 1.125rem;
+      /* 18px - Section headings, important information */
+      --font-size-lg: 1.25rem;
+      /* 20px - Modal headers, major section titles */
+      --font-size-xl: 1.5rem;
+      /* 24px - Page titles */
+      --font-size-2xl: 1.75rem;
+      /* 28px - Application header */
+
+      /* Line heights */
+      --line-height-tight: 1.2;
+      --line-height-normal: 1.5;
+      --line-height-loose: 1.8;
+
+      /* Font weights */
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-semibold: 600;
+      --font-weight-bold: 700;
+
+      /* Colors */
+      --primary-color: #111a66;
+      --primary-color-light: #3d45aa;
+      /* Medium blue - for hover states */
+      --primary-color-lighter: #e6e7f5;
+      /* Very light blue - for backgrounds */
+      --text-dark: #333333;
+      /* For headings and important text */
+      --text-medium: #555555;
+      /* For body text */
+      --text-light: #6c757d;
+      /* For secondary or muted text */
+      --success-color: #28a745;
+      /* Green for success states and appointment times */
+      --warning-color: #ffc107;
+      /* Yellow for warnings */
+      --danger-color: #dc3545;
+      /* Red for errors */
+      --background-light: #f8f9fa;
+      /* Light gray for backgrounds */
+      --border-color: #dee2e6;
+      /* For borders and dividers */
+    }
+
+    /* Basic body styling */
+    body {
+      background-color: #f8f9fa;
+      /* Light grey background */
+      overflow-x: hidden;
+      /* Prevent horizontal scroll on the main body */
+    }
+
+    .badge-tech-assigned {
+      background-color: var(--primary-color) !important;
+      color: white;
+    }
+
+    /* Container for the Trello board columns */
+    .board-container {
+      display: flex;
+      /* Arrange columns horizontally */
+      overflow-x: auto;
+      /* Allow horizontal scrolling if columns overflow */
+      padding: 20px;
+      /* Padding around the board */
+      gap: 20px;
+      /* Space between columns */
+      min-height: calc(100vh - 100px);
+      /* Minimum height to fill viewport below header */
+      align-items: flex-start;
+      /* Align columns to the top */
+    }
+
+    /* Styling for individual columns (lists) */
+    .board-column {
+      flex: 0 0 320px;
+      /* Slightly wider for more info */
+      /* Fixed width, don't grow or shrink */
+      background-color: #e9ecef;
+      /* Column background color */
+      border-radius: 0.375rem;
+      /* Standard Bootstrap border radius */
+      padding: 15px;
+      /* Padding inside columns */
+      max-height: calc(100vh - 140px);
+      /* Limit column height to prevent excessive page scroll */
+      display: flex;
+      /* Use flexbox for vertical layout within column */
+      flex-direction: column;
+      /* Stack header, cards, button vertically */
+    }
+
+    /* Styling for the column title */
+    /* Styling for the column title */
+    .column-header {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-color);
+      color: var(--text-dark);
+    }
+
+    /* Container holding the cards within a column */
+    .cards-container {
+      flex-grow: 1;
+      /* Allow this area to grow and fill vertical space */
+      overflow-y: auto;
+      /* Allow vertical scrolling if cards overflow */
+      min-height: 50px !important;
+      /* Minimum height to ensure drop zone is always visible */
+      padding-right: 5px;
+      /* Space for the scrollbar */
+      margin-bottom: 10px;
+      /* Space below cards before the add button */
+      /* Custom scrollbar styling (optional) */
+      scrollbar-width: thin;
+      scrollbar-color: #adb5bd #e9ecef;
+    }
+
+    /* Webkit scrollbar styling */
+    .cards-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .cards-container::-webkit-scrollbar-track {
+      background: #e9ecef;
+      border-radius: 4px;
+    }
+
+    .cards-container::-webkit-scrollbar-thumb {
+      background-color: #adb5bd;
+      border-radius: 4px;
+      border: 2px solid #e9ecef;
+    }
+
+    /* Styling for individual cards */
+    .trello-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 0.375rem;
+      padding: 0.875rem 1rem;
+      margin-bottom: 0.75rem;
+      cursor: grab;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+      user-select: none;
+    }
+
+
+    .trello-card:hover {
+      border-color: var(--primary-color-light);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* --- Detailed Card Structure --- */
+    .card-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-customer-name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-tight);
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+      display: block;
+      word-wrap: break-word;
+    }
+
+    /* Job type label styling */
+    .card-job-type {
+      display: inline-block;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--primary-color);
+      background-color: var(--primary-color-lighter);
+      padding: 0.15rem 0.5rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.375rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      width: fit-content !important;
+    }
+
+    .card-appointment-time {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-normal);
+      color: var(--success-color);
+      margin-bottom: 0.375rem;
+      display: block;
+    }
+
+    .card-address {
+      font-size: var(--font-size-sm);
+      color: var(--text-medium);
+      margin-bottom: 0.625rem;
+      line-height: var(--line-height-tight);
+      display: block;
+      word-wrap: break-word;
+    }
+
+    .card-details-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.5rem;
+      margin-top: 0.25rem;
+      font-size: var(--font-size-xs);
+    }
+
+    /* --- End Detailed Card Structure --- */
+
+
+    /* Change cursor during active drag */
+    .trello-card:active {
+      cursor: grabbing;
+    }
+
+    /* Styling for Due Date / Assignee badges *on the card* */
+    .card-badge {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      padding: 0.15rem 0.4rem;
+      border-radius: 0.25rem;
+      line-height: 1;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+
+    /* Push the "Add Card" button to the bottom of the column */
+    .add-card-btn {
+      margin-top: auto;
+    }
+
+    /* SortableJS helper classes for visual feedback during drag */
+    .sortable-ghost {
+      opacity: 0.4;
+      background-color: #cce5ff;
+    }
+
+    /* Placeholder style */
+    .sortable-drag {
+      opacity: 0.9;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Style of item being dragged */
+
+    /* Container for the "Add New List" button */
+    .add-column-container {
+      flex: 0 0 320px;
+      /* Match column width */
+      padding-top: 0px;
+    }
+
+    /* Modal content styling */
+    .modal-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-dark);
+    }
+
+    .section-title {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-dark);
+      margin: 1.5rem 0 0.75rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .form-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-medium);
+      margin-bottom: 0.25rem;
+    }
+
+    .modal-form-section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-form-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    /* Modal label styling */
+    .modal-label {
+      display: inline-block;
+      padding: 0.25em 0.6em;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      line-height: 1.2;
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      border-radius: 0.25rem;
+      margin-right: 0.375rem;
+      margin-bottom: 0.375rem;
+      cursor: pointer;
+      transition: opacity 0.15s ease-in-out;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .modal-label:not(.selected) {
+      opacity: 0.6;
+    }
+
+    .modal-label.selected {
+      opacity: 1.0;
+    }
+
+    /* --- Color Palette Styles (in Modal) --- */
+    .color-palette-square {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin: 2px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: transform 0.1s ease-in-out;
+    }
+
+    .color-palette-square:hover {
+      transform: scale(1.1);
+    }
+
+    .color-palette-square.selected {
+      border: 2px solid #000;
+      transform: scale(1.1);
+    }
+
+    /* Navigation styles */
+    .nav-tabs .nav-link {
+      cursor: pointer;
+    }
+
+    /* Search box styles */
+    .search-container {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .search-container .form-control {
+      padding-left: 2.5rem;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 0.6rem;
+      color: #6c757d;
+    }
+
+    /* Technician avatar styles */
+    .tech-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    /* Equipment item styling */
+    .equipment-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background-color: white;
+      border: 1px solid var(--border-color);
+      border-radius: 0.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .equipment-info {
+      flex-grow: 1;
+    }
+
+    .equipment-primary {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-dark);
+      margin-bottom: 0.125rem;
+    }
+
+    .equipment-secondary {
+      font-size: var(--font-size-sm);
+      color: var(--text-medium);
+    }
+
+    .equipment-controls {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    /* Navigation and headings */
+    .navbar-brand {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: white !important;
+    }
+
+    /* Page titles (h2) - used in Customer/Technician management */
+    h2,
+    .h2 {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-dark);
+      margin-bottom: 1.25rem;
+    }
+
+    /* Section titles (h4) - used in various forms */
+    h4,
+    .h4 {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+    }
+
+    /* Smaller headings (h5, h6) */
+    h5,
+    .h5 {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-dark);
+    }
+
+    h6,
+    .h6 {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-dark);
+    }
+
+    /* Form controls and labels */
+    .form-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-medium);
+      margin-bottom: 0.25rem;
+    }
+
+    .form-control {
+      font-size: var(--font-size-base);
+    }
+
+    .form-control-sm {
+      font-size: var(--font-size-sm);
+    }
+
+    .form-select {
+      font-size: var(--font-size-base);
+    }
+
+    .form-select-sm {
+      font-size: var(--font-size-sm);
+    }
+
+    /* Button typography */
+    .btn {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .btn-sm {
+      font-size: var(--font-size-sm);
+    }
+
+    /* Table typography */
+    .table th {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-dark);
+    }
+
+    .table td {
+      font-size: var(--font-size-sm);
+      color: var(--text-medium);
+    }
+
+    /* Customer and technician list items */
+    .customer-name,
+    .technician-name {
+      font-weight: var(--font-weight-medium);
+      color: var(--text-dark);
+    }
+
+    /* Improved spacing for content sections */
+    .container,
+    .container-fluid {
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+    }
+
+    /* Navigation tabs */
+    .nav-tabs .nav-link {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .nav-tabs .nav-link.active {
+      font-weight: var(--font-weight-semibold);
+      color: var(--primary-color);
+    }
+  </style>
+</head>
+
+<body>
+  <button
+    onclick="localStorage.removeItem('hvacJobTrackerData'); localStorage.removeItem('hvacCustomerData'); localStorage.removeItem('hvacTechnicianData'); location.reload();"
+    style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; padding: 5px 10px;" class="btn btn-warning btn-sm"
+    title="Clears ALL saved data (board, customers, and technicians) from localStorage and reloads the page.">
+    Reset Local Storage
+  </button>
+  <nav class="navbar navbar-light shadow-sm" style="background-color: #111a66 !important;">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1" style="color: white !important; cursor: pointer;" id="navbarTitle">HVAC Job
+        Tracker</span>
+      <div class="d-flex">
+        <div class="btn-group me-2">
+          <button class="btn btn-outline-light" id="showBoardBtn">Board</button>
+          <button class="btn btn-outline-light" id="showCustomersBtn">Customers</button>
+          <button class="btn btn-outline-light" id="showTechniciansBtn">Technicians</button>
+        </div>
+        <button class="btn btn-success" id="quickAddJobBtn">
+          <i class="bi bi-plus-lg"></i> New Job
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="board-container" id="boardContainer">
+    <div class="add-column-container">
+      <button class="btn btn-success w-100" id="addColumnBtn">Add New List</button>
+    </div>
+  </div>
+
+  <div id="customerManagementSection" style="display: none;">
+    <div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Customer Management</h2>
+        <button class="btn btn-primary" id="showAddCustomerFormBtn">Add New Customer</button>
+      </div>
+
+      <div class="search-container">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" class="form-control" id="customerSearchInput" placeholder="Search customers...">
+      </div>
+
+      <div id="customerListContainer" class="mb-4">
+        <p>Loading customers...</p>
+      </div>
+
+      <div id="addEditCustomerFormContainer" style="display: none;" class="card card-body bg-light">
+        <h4 id="customerFormTitle">Add New Customer</h4>
+        <form id="customerForm">
+          <input type="hidden" id="customerId">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="customerName" class="form-label">Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="customerName" required>
+            </div>
+            <div class="col-md-6">
+              <label for="customerContact" class="form-label">Contact (Phone/Email)</label>
+              <input type="text" class="form-control" id="customerContact">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="customerAddress" class="form-label">Primary Address</label>
+            <textarea class="form-control" id="customerAddress" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="customerNotes" class="form-label">Notes</label>
+            <textarea class="form-control" id="customerNotes" rows="3"></textarea>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" id="cancelCustomerFormBtn">Cancel</button>
+            <button type="submit" class="btn btn-success" id="saveCustomerBtn">Save Customer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="technicianManagementSection" style="display: none;">
+    <div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Technician Management</h2>
+        <button class="btn btn-primary" id="showAddTechnicianFormBtn">Add New Technician</button>
+      </div>
+
+      <div id="technicianListContainer" class="mb-4">
+        <p>Loading technicians...</p>
+      </div>
+
+      <div id="addEditTechnicianFormContainer" style="display: none;" class="card card-body bg-light">
+        <h4 id="technicianFormTitle">Add New Technician</h4>
+        <form id="technicianForm">
+          <input type="hidden" id="technicianId">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="technicianName" class="form-label">Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="technicianName" required>
+            </div>
+            <div class="col-md-6">
+              <label for="technicianPhone" class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" id="technicianPhone">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="technicianEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="technicianEmail">
+            </div>
+            <div class="col-md-6">
+              <label for="technicianColor" class="form-label">Color Tag</label>
+              <input type="color" class="form-control form-control-color" id="technicianColor" value="#0d6efd"
+                title="Choose a color for this technician">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="technicianSpecialties" class="form-label">Specialties/Skills</label>
+            <textarea class="form-control" id="technicianSpecialties" rows="2"
+              placeholder="e.g. Installation, Repair, Commercial units, etc."></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="technicianNotes" class="form-label">Notes</label>
+            <textarea class="form-control" id="technicianNotes" rows="2"></textarea>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" id="cancelTechnicianFormBtn">Cancel</button>
+            <button type="submit" class="btn btn-success" id="saveTechnicianBtn">Save Technician</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="cardEditModal" tabindex="-1" aria-labelledby="cardEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cardEditModalLabel">Job Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Customer Information Section -->
+          <div class="modal-form-section">
+            <h6 class="section-title">Customer Information</h6>
+            <div class="mb-3">
+              <label for="cardEditCustomerId" class="form-label">Customer <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <select class="form-select" id="cardEditCustomerId" required>
+                  <option value="">-- Select a Customer --</option>
+                </select>
+                <button class="btn btn-outline-secondary" type="button" id="quickAddCustomerBtn">
+                  <i class="bi bi-plus-lg"></i> New
+                </button>
+              </div>
+            </div>
+            <div id="quickAddCustomerForm" class="card card-body bg-light mb-3" style="display: none;">
+              <div class="d-flex justify-content-between mb-2">
+                <h6>Quick Add Customer</h6>
+                <button type="button" class="btn-close" id="cancelQuickAddCustomer" aria-label="Close"></button>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-6">
+                  <label for="quickCustomerName" class="form-label">Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" id="quickCustomerName" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="quickCustomerContact" class="form-label">Contact</label>
+                  <input type="text" class="form-control form-control-sm" id="quickCustomerContact">
+                </div>
+              </div>
+              <div class="mb-2">
+                <label for="quickCustomerAddress" class="form-label">Address</label>
+                <textarea class="form-control form-control-sm" id="quickCustomerAddress" rows="2"></textarea>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" id="saveQuickAddCustomerBtn">Add & Select</button>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="cardEditContactInfoDisplay" class="form-label">Contact Info</label>
+                <input type="text" class="form-control" id="cardEditContactInfoDisplay" readonly disabled>
+              </div>
+              <div class="col-md-6">
+                <label for="cardEditAddressDisplay" class="form-label">Service Address</label>
+                <textarea class="form-control" id="cardEditAddressDisplay" rows="1" readonly disabled></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Job Details Section -->
+          <div class="modal-form-section">
+            <h6 class="section-title">Job Details</h6>
+            <div class="mb-3">
+              <label for="cardEditDescription" class="form-label">Job Description / Problem</label>
+              <textarea class="form-control" id="cardEditDescription" rows="3"></textarea>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="cardEditAppointmentTime" class="form-label">Appointment Time</label>
+                <input type="datetime-local" class="form-control" id="cardEditAppointmentTime">
+              </div>
+
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="cardEditAssignee" class="form-label">Assign To</label>
+                <div class="input-group">
+                  <select class="form-select" id="cardEditAssignee">
+                    <option selected value="">-- Unassigned --</option>
+                  </select>
+                  <button class="btn btn-outline-secondary" type="button" id="quickAddTechnicianBtn">
+                    <i class="bi bi-plus-lg"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div id="quickAddTechnicianForm" class="card card-body bg-light mb-3" style="display: none;">
+              <div class="d-flex justify-content-between mb-2">
+                <h6>Quick Add Technician</h6>
+                <button type="button" class="btn-close" id="cancelQuickAddTechnician" aria-label="Close"></button>
+              </div>
+              <div class="row mb-2">
+                <div class="col-md-8">
+                  <label for="quickTechnicianName" class="form-label">Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" id="quickTechnicianName" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="quickTechnicianColor" class="form-label">Color</label>
+                  <input type="color" class="form-control form-control-color form-control-sm" id="quickTechnicianColor"
+                    value="#0d6efd">
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" id="saveQuickAddTechnicianBtn">Add & Select</button>
+            </div>
+            <div class="row mb-3 align-items-end">
+              <div class="col-md-12">
+                <label for="cardEditDueDate" class="form-label">Internal Due Date (Optional)</label>
+                <input type="date" class="form-control" id="cardEditDueDate">
+              </div>
+              <div class="col-md-6"></div>
+            </div>
+          </div>
+
+          <!-- Equipment Section -->
+          <div class="modal-form-section">
+            <h6 class="section-title">Equipment List</h6>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="form-label mb-0">Equipment Items</span>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="addEquipmentBtn">
+                  <i class="bi bi-plus-lg"></i> Add Equipment
+                </button>
+              </div>
+              <div id="equipmentListContainer" class="border rounded p-2"
+                style="min-height: 60px; max-height: 200px; overflow-y: auto;">
+                <p class="text-muted text-center small m-2">No equipment added yet.</p>
+              </div>
+            </div>
+
+            <div id="equipmentFormContainer" class="card card-body bg-light mb-3" style="display: none;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 id="equipmentFormTitle">Add New Equipment</h6>
+                <button type="button" class="btn-close" id="cancelEquipmentFormBtn" aria-label="Close"></button>
+              </div>
+              <form id="equipmentForm">
+                <input type="hidden" id="equipmentItemId">
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <label for="equipmentType" class="form-label form-label-sm">Equipment Type <span
+                        class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-sm" id="equipmentType" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="equipmentCategory" class="form-label form-label-sm">Category <span
+                        class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" id="equipmentCategory" required>
+                      <option value="" selected>-- Select --</option>
+                      <option value="Commercial">Commercial</option>
+                      <option value="Industrial">Industrial</option>
+                      <option value="Residential">Residential</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <label for="equipmentUnitNumber" class="form-label form-label-sm">Unit Number</label>
+                    <input type="text" class="form-control form-control-sm" id="equipmentUnitNumber">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="equipmentServes" class="form-label form-label-sm">Serves (e.g., Office Area, Floor
+                      2)</label>
+                    <input type="text" class="form-control form-control-sm" id="equipmentServes">
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <label for="equipmentLocation" class="form-label form-label-sm">Location (e.g., Rooftop, Mech
+                      Room)</label>
+                    <input type="text" class="form-control form-control-sm" id="equipmentLocation">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="equipmentManufacturer" class="form-label form-label-sm">Manufacturer</label>
+                    <input type="text" class="form-control form-control-sm" id="equipmentManufacturer">
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-md-6">
+                    <label for="equipmentModel" class="form-label form-label-sm">Model</label>
+                    <input type="text" class="form-control form-control-sm" id="equipmentModel">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="equipmentSerialNumber" class="form-label form-label-sm">Serial Number</label>
+                    <input type="text" class="form-control form-control-sm" id="equipmentSerialNumber">
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <label for="equipmentRefrigerantType" class="form-label form-label-sm">Refrigerant Type</label>
+                  <input type="text" class="form-control form-control-sm" id="equipmentRefrigerantType">
+                </div>
+                <div class="mb-2">
+                  <label for="equipmentNotes" class="form-label form-label-sm">Additional Notes</label>
+                  <textarea class="form-control form-control-sm" id="equipmentNotes" rows="2"></textarea>
+                </div>
+                <div class="d-flex justify-content-end">
+                  <button type="button" class="btn btn-secondary btn-sm me-2"
+                    id="cancelEquipmentFormBtnImplicit">Cancel</button>
+                  <button type="button" class="btn btn-success btn-sm" id="saveEquipmentFormBtn">Save Equipment</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Labels Section -->
+          <div class="modal-form-section">
+            <h6 class="section-title">Job Type & Tags</h6>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label class="form-label">Job Type / Tags (Labels)</label>
+                <div id="cardEditLabelsList" class="mb-1 border p-2 rounded" style="min-height: 40px;">
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#createLabelCollapse" aria-expanded="false" aria-controls="createLabelCollapse">
+                  Manage Labels
+                </button>
+              </div>
+            </div>
+            <div class="collapse mt-2" id="createLabelCollapse">
+              <div class="card card-body bg-light">
+                <h6>Create New Label</h6>
+                <div class="mb-2">
+                  <label for="newLabelText" class="form-label">New Label Text:</label>
+                  <input type="text" class="form-control form-control-sm" id="newLabelText">
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Choose Color:</label>
+                  <div id="newLabelColorPalette">
+                  </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-success" id="createLabelBtn">Create & Apply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-danger" id="deleteCardBtn">Delete Job</button>
+          <div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="saveCardChangesBtn">Save Job Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
+  <!-- <script src="/static/crm/script.js"></script> -->
+  <script src="script.js"></script>
+</body>
+
+</html>
