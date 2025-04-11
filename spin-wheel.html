@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Spin Wheel Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars during spin */
+        }
+
+        .spin-wheel-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 450px; /* Slightly larger for wheel */
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.6em;
+        }
+
+        .wheel-wrapper {
+            position: relative; /* For pointer positioning */
+            width: 90%; /* Responsive width */
+            max-width: 350px; /* Max size of the wheel */
+            aspect-ratio: 1 / 1; /* Maintain square shape */
+            margin: 25px auto; /* Center the wrapper */
+        }
+
+        #spinWheelCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            /* Optional: Add a subtle border or background */
+            /* border: 1px solid #ccc; */
+        }
+
+        .pointer {
+            position: absolute;
+            /* Position at the top center, pointing down */
+            top: -10px; /* Adjust overlap */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            /* Create triangle shape */
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid #e74c3c; /* Pointer color (red) */
+            z-index: 10; /* Ensure pointer is above canvas */
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));
+        }
+
+        #resultArea {
+            margin-top: 25px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #34495e;
+            min-height: 1.5em; /* Reserve space */
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .button-area {
+             margin-top: 20px;
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             gap: 10px;
+        }
+
+        #spinButton, #convertButton {
+            color: white;
+            border: none;
+            padding: 12px 25px; /* Slightly smaller padding */
+            font-size: 1em; /* Adjusted font size */
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 70%;
+            max-width: 200px;
+            transition: background-color 0.2s ease, opacity 0.3s ease-out, transform 0.1s ease;
+        }
+
+        #spinButton {
+             background-color: #e67e22; /* Orange */
+             opacity: 1;
+        }
+         #spinButton:hover:not(:disabled) {
+             background-color: #d35400;
+        }
+         #spinButton:active:not(:disabled) {
+            transform: scale(0.97);
+         }
+         #spinButton:disabled {
+             background-color: #bdc3c7;
+             cursor: not-allowed;
+             opacity: 0.7;
+         }
+
+        #convertButton {
+            background-color: #2ecc71; /* Green */
+            opacity: 0;
+            transform: translateY(10px);
+            display: none; /* Start hidden */
+        }
+        #convertButton.visible {
+            display: inline-block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #convertButton:hover:not(:disabled) {
+            background-color: #27ae60;
+        }
+        #convertButton:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="spin-wheel-container">
+        <h1>Spin to Win!</h1>
+
+        <div class="wheel-wrapper">
+            <canvas id="spinWheelCanvas"></canvas>
+            <div class="pointer"></div>
+        </div>
+
+        <div id="resultArea">Spin the wheel!</div>
+
+        <div class="button-area">
+            <button id="spinButton">Spin!</button>
+            <button id="convertButton">Convert Prize to Points</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- Configuration --- */
+        const segments = [
+            { fillStyle: '#FADBD8', text: 'Try Again', type: 'lose' },
+            { fillStyle: '#D6EAF8', text: '50 Points', type: 'win' },
+            { fillStyle: '#D1F2EB', text: 'Smartphone', type: 'win' },
+            { fillStyle: '#FCF3CF', text: 'Try Again', type: 'lose' },
+            { fillStyle: '#FADBD8', text: '100 Points', type: 'win' },
+            { fillStyle: '#D6EAF8', text: 'Luxury Bag', type: 'win' },
+            { fillStyle: '#D1F2EB', text: 'Try Again', type: 'lose' },
+            { fillStyle: '#FCF3CF', text: 'Laptop', type: 'win' }
+        ];
+        const wheelRadiusMultiplier = 0.9; // Use 90% of canvas radius for wheel itself
+        const textRadiusMultiplier = 0.6; // How far from center text is placed
+        const spinDuration = 5000; // Milliseconds (5 seconds)
+        const spinRevolutions = 5; // Number of full rotations during spin
+
+        /* --- DOM Elements --- */
+        const canvas = document.getElementById('spinWheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const resultArea = document.getElementById('resultArea');
+        const spinButton = document.getElementById('spinButton');
+        const convertButton = document.getElementById('convertButton');
+        const wheelWrapper = document.querySelector('.wheel-wrapper'); // Needed for resize
+
+        /* --- State Variables --- */
+        let canvasSize = 0;
+        let wheelRadius = 0;
+        let centerX = 0;
+        let centerY = 0;
+        let currentAngle = 0; // Current rotation angle
+        let targetAngle = 0; // Target angle to stop at
+        let startAngle = 0; // Angle when spin starts
+        let angleChange = 0; // Total angle to rotate during animation
+        let isSpinning = false;
+        let spinStartTime = 0;
+        let animationFrameId = null;
+        let winningSegment = null;
+
+        const numSegments = segments.length;
+        const arcSize = (2 * Math.PI) / numSegments;
+
+        /* --- Drawing Functions --- */
+        function drawWheel(rotationAngle = 0) {
+            ctx.clearRect(0, 0, canvasSize, canvasSize); // Clear canvas
+
+            // Translate and rotate context
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(rotationAngle);
+
+            const textRadius = wheelRadius * textRadiusMultiplier;
+
+            for (let i = 0; i < numSegments; i++) {
+                const segmentAngleStart = i * arcSize;
+                const segmentAngleEnd = (i + 1) * arcSize;
+
+                // Draw segment slice
+                ctx.beginPath();
+                ctx.moveTo(0, 0); // Move to center
+                ctx.arc(0, 0, wheelRadius, segmentAngleStart, segmentAngleEnd, false);
+                ctx.closePath(); // Line back to center
+
+                ctx.fillStyle = segments[i].fillStyle;
+                ctx.fill();
+                // Optional: Add stroke between segments
+                ctx.strokeStyle = '#aaa'; // Segment border color
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Draw text label
+                ctx.save();
+                // Rotate context to align text radially
+                const textAngle = segmentAngleStart + arcSize / 2;
+                ctx.rotate(textAngle);
+
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#333'; // Text color
+                // Adjust font size based on wheel size
+                const fontSize = Math.max(10, Math.min(16, Math.floor(wheelRadius * 0.1)));
+                ctx.font = `bold ${fontSize}px Arial`;
+
+                // Draw text at calculated radius, slight offset towards center if needed
+                ctx.fillText(segments[i].text, textRadius, 0);
+
+                ctx.restore(); // Restore rotation for next segment
+            }
+
+            ctx.restore(); // Restore translation/rotation
+
+            // Optional: Draw center pin/circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, wheelRadius * 0.08, 0, 2 * Math.PI, false); // Center pin size
+            ctx.fillStyle = '#444'; // Pin color
+            ctx.fill();
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        /* --- Animation Functions --- */
+        // Cubic easing function (easeOut)
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        function spinAnimation(timestamp) {
+            if (!spinStartTime) spinStartTime = timestamp;
+            const elapsed = timestamp - spinStartTime;
+            let progress = elapsed / spinDuration;
+
+            if (progress >= 1) {
+                // Animation finished
+                finishSpin();
+                return;
+            }
+
+            // Apply easing
+            const easedProgress = easeOutCubic(progress);
+            currentAngle = startAngle + angleChange * easedProgress;
+
+            // Redraw wheel at new angle
+            drawWheel(currentAngle);
+
+            // Request next frame
+            animationFrameId = requestAnimationFrame(spinAnimation);
+        }
+
+        /* --- Spin Logic --- */
+        function startSpin() {
+            if (isSpinning) return;
+            console.log('Starting spin...');
+
+            isSpinning = true;
+            spinButton.disabled = true;
+            convertButton.classList.remove('visible'); // Hide convert button
+            convertButton.style.display = 'none';
+            convertButton.disabled = true;
+            resultArea.textContent = 'Spinning...';
+            spinStartTime = 0; // Reset start time for this spin
+            startAngle = currentAngle % (2 * Math.PI); // Store current angle (normalized)
+
+            // Calculate random target segment and angle
+            const targetIndex = Math.floor(Math.random() * numSegments);
+            // Angle pointing to the middle of the target segment
+            // Adjust for pointer being at the top (0 radians needs to align with segment mid-point)
+             const targetMidpointAngle = (targetIndex + 0.5) * arcSize;
+             // The wheel needs to rotate so this midpoint ends up at the top (0 or 2PI)
+             // Rotation = -(targetMidpointAngle) makes it align if rotation is positive clockwise
+             // Since canvas rotation is positive clockwise, targetAngle = 2PI - targetMidpointAngle is where we want it to STOP
+             targetAngle = (2 * Math.PI - targetMidpointAngle) % (2 * Math.PI);
+
+            // Calculate total rotation including extra revolutions
+            // Need difference from start angle, add revolutions, ensure shortest path is considered (or just add full revs)
+            angleChange = (spinRevolutions * 2 * Math.PI) + targetAngle - startAngle;
+            // Ensure positive rotation if needed, or handle wrapping
+            // The above calculation might result in spinning backwards if targetAngle < startAngle.
+            // Let's ensure minimum revolutions:
+            angleChange = (spinRevolutions * 2 * Math.PI) + targetAngle - (startAngle % (2 * Math.PI));
+            // Make sure we rotate at least the revolutions:
+             if (angleChange < spinRevolutions * 2 * Math.PI) {
+                  angleChange += 2 * Math.PI; // Ensure forward spin if target is close
+             }
+
+            console.log(`Target Segment: ${targetIndex}, Target Angle: ${targetAngle.toFixed(2)}, Start Angle: ${startAngle.toFixed(2)}, Change: ${angleChange.toFixed(2)}`);
+
+            // Start animation loop
+            if (animationFrameId) cancelAnimationFrame(animationFrameId); // Cancel previous if any
+            animationFrameId = requestAnimationFrame(spinAnimation);
+        }
+
+        function finishSpin() {
+            console.log('Spin finished.');
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+            isSpinning = false;
+            spinButton.disabled = false;
+
+            // Snap to final angle and redraw
+            currentAngle = targetAngle;
+            drawWheel(currentAngle);
+
+            // Determine winning segment based on final angle (pointer at top = 0 rad)
+            // Normalize the final angle: angle increases clockwise
+            const finalNormalizedAngle = (2 * Math.PI - (currentAngle % (2 * Math.PI))) % (2 * Math.PI);
+            const winningIndex = Math.floor(finalNormalizedAngle / arcSize);
+            winningSegment = segments[winningIndex];
+
+            console.log(`Final Angle: ${currentAngle.toFixed(2)}, Normalized: ${finalNormalizedAngle.toFixed(2)}, Index: ${winningIndex}`);
+
+            // Display result
+            if (winningSegment) {
+                resultArea.textContent = `You won: ${winningSegment.text}!`;
+                if (winningSegment.type === 'win') {
+                    convertButton.style.display = 'inline-block';
+                    setTimeout(() => {
+                        convertButton.classList.add('visible');
+                        convertButton.disabled = false;
+                    }, 10);
+                }
+            } else {
+                resultArea.textContent = 'Spin Error!'; // Should not happen
+            }
+        }
+
+        /* --- Convert Button Logic --- */
+        function handleConvert() {
+            if (!winningSegment || winningSegment.type !== 'win') return;
+            alert(`Converting "${winningSegment.text}" to points! (Demo only)`);
+            resultArea.textContent = 'Prize Converted!';
+            convertButton.classList.remove('visible');
+             setTimeout(() => {
+                 convertButton.style.display = 'none';
+             }, 300);
+            convertButton.disabled = true;
+            // Optional: Visually grey out wheel or something
+        }
+        convertButton.addEventListener('click', handleConvert);
+
+
+        /* --- Initialization & Resize --- */
+        function initAndResize() {
+            console.log('Initializing/Resizing Wheel...');
+            // Get actual size of the container
+            canvasSize = wheelWrapper.offsetWidth;
+            if(canvasSize === 0) {
+                 console.warn("Canvas container size is 0, retrying...");
+                 setTimeout(initAndResize, 100); // Retry if layout not ready
+                 return;
+            }
+            canvas.width = canvasSize;
+            canvas.height = canvasSize;
+
+            // Update derived dimensions
+            wheelRadius = canvasSize / 2 * wheelRadiusMultiplier;
+            centerX = canvasSize / 2;
+            centerY = canvasSize / 2;
+
+            // Draw initial wheel state
+            drawWheel(currentAngle); // Draw at current angle (usually 0 initially)
+            console.log('Wheel drawn. Radius:', wheelRadius);
+        }
+
+
+        /* --- Event Listeners --- */
+        spinButton.addEventListener('click', startSpin);
+
+        // Initial setup on load
+        window.addEventListener('load', initAndResize);
+
+        // Debounced resize handler
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                 console.log('Resizing detected.');
+                 initAndResize(); // Re-initialize and redraw on resize
+            }, 250);
+        });
+
+    </script>
+</body>
+</html>

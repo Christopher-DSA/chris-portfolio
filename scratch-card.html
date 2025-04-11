@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <title>Scratch Card Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            margin: 0;
+            touch-action: none; /* Prevent default touch actions like scrolling */
+            overflow: hidden; /* Prevent body scroll just in case */
+        }
+
+        .scratch-card-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 350px; /* Typical card width */
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.5em;
+        }
+
+        .card-wrapper {
+            position: relative; /* Crucial for layering */
+            width: 100%;
+            padding-bottom: 60%; /* Adjust for desired card aspect ratio */
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden; /* Clip contents to the card area */
+            background-color: #e0e0e0; /* Fallback bg for prize layer */
+            user-select: none; /* Prevent selecting things behind canvas */
+           -webkit-user-select: none;
+        }
+
+        .prize-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8em; /* Make prize text large */
+            font-weight: bold;
+            color: #1a252f; /* Slightly darker prize text color */
+            background: linear-gradient(135deg, #f5f7fa, #e0eafc); /* Subtle gradient background */
+            text-align: center;
+            padding: 10px; /* Padding for text */
+            box-sizing: border-box; /* Include padding in dimensions */
+        }
+
+        #scratchCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: cell; /* Fun cursor for scratching */
+            background-color: transparent; /* Make canvas bg transparent */
+        }
+
+        #instructionArea {
+            margin-top: 15px;
+            color: #555;
+            font-size: 0.9em;
+            min-height: 1.2em; /* Reserve space */
+        }
+
+        .button-area {
+             margin-top: 15px; /* Space above buttons */
+             display: flex;
+             flex-direction: column; /* Stack buttons */
+             align-items: center; /* Center buttons */
+             gap: 10px; /* Space between buttons */
+        }
+
+         /* --- Buttons Styling --- */
+         #convertButton, #newCardButton {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 80%; /* Make buttons take similar width */
+            max-width: 250px;
+            transition: background-color 0.2s ease, opacity 0.3s ease-out, transform 0.3s ease-out;
+         }
+
+         #convertButton {
+            background-color: #2ecc71; /* Green */
+             /* Initially hidden visually and from layout */
+            opacity: 0;
+            transform: translateY(10px);
+            display: none; /* Start hidden */
+        }
+         /* Class to make button visible */
+        #convertButton.visible {
+            display: inline-block; /* Needs display change */
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #convertButton:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+         #convertButton:hover:not(:disabled) {
+            background-color: #27ae60;
+        }
+
+        #newCardButton {
+             background-color: #3498db; /* Blue */
+             opacity: 1;
+             transform: translateY(0);
+             display: inline-block; /* Always visible by default */
+        }
+         #newCardButton:hover {
+             background-color: #2980b9;
+        }
+         #newCardButton:disabled { /* Might disable during setup later */
+             background-color: #bdc3c7;
+             cursor: not-allowed;
+         }
+
+    </style>
+</head>
+<body>
+    <div class="scratch-card-container">
+        <h1>Scratch & Win!</h1>
+
+        <div class="card-wrapper">
+            <div class="prize-layer">
+                <span id="prizeText"></span> </div>
+            <canvas id="scratchCanvas"></canvas>
+        </div>
+
+        <div id="instructionArea">Scratch the silver area above to reveal your prize!</div>
+
+        <div class="button-area">
+            <button id="convertButton">Convert Prize to Points</button>
+            <button id="newCardButton">Get a New Scratch Card!</button> </div>
+    </div>
+
+    <script>
+        /* --- Configuration --- */
+        const COATING_COLOR = 'silver';
+        const SCRATCH_RADIUS = 25;
+
+        const possiblePrizes = [
+            { name: "🏆 Laptop", type: "win" },
+            { name: "📱 Smartphone", type: "win" },
+            { name: "✨ 500 Points", type: "win" },
+            { name: "😥 Try Again", type: "lose" },
+            { name: "😥 Better Luck Next Time", type: "lose" }
+        ];
+
+        /* --- DOM Elements --- */
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const prizeTextElement = document.getElementById('prizeText');
+        const instructionArea = document.getElementById('instructionArea');
+        const convertButton = document.getElementById('convertButton');
+        const newCardButton = document.getElementById('newCardButton'); // Get new button
+        const cardWrapper = document.querySelector('.card-wrapper');
+
+        /* --- State Variables --- */
+        let isDrawing = false;
+        let currentPrize = null;
+
+        /* --- Initialization --- */
+        function setupCanvas() {
+            console.log('Setting up canvas...');
+            // newCardButton.disabled = true; // Optional: disable while setting up
+
+            const width = cardWrapper.offsetWidth;
+            const height = cardWrapper.offsetHeight;
+            if (width === 0 || height === 0) {
+                 console.error("Card wrapper has zero dimensions! Retrying...");
+                  // Simple retry mechanism
+                  setTimeout(setupCanvas, 100);
+                 return;
+            }
+            canvas.width = width;
+            canvas.height = height;
+
+            // Select prize
+            const randomIndex = Math.floor(Math.random() * possiblePrizes.length);
+            currentPrize = possiblePrizes[randomIndex];
+            prizeTextElement.textContent = currentPrize.name;
+            console.log('Prize selected:', currentPrize.name);
+
+            // Hide/disable convert button initially
+            convertButton.classList.remove('visible');
+            convertButton.style.display = 'none'; // Ensure display none too
+            convertButton.disabled = true;
+
+            // Apply the scratchable coating
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = COATING_COLOR;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            console.log('Canvas coated with:', COATING_COLOR);
+
+             // Reset instructions
+             instructionArea.textContent = 'Scratch the silver area above to reveal your prize!';
+             isDrawing = false; // Ensure drawing state is reset
+
+             // newCardButton.disabled = false; // Re-enable after setup
+        }
+
+        /* --- Scratching Logic --- */
+        function getCoords(event) {
+            const rect = canvas.getBoundingClientRect();
+            let x, y;
+            if (event.changedTouches && event.changedTouches.length > 0) {
+                x = event.changedTouches[0].clientX - rect.left;
+                y = event.changedTouches[0].clientY - rect.top;
+            } else {
+                x = event.clientX - rect.left;
+                y = event.clientY - rect.top;
+            }
+             x = Math.max(0, Math.min(x, canvas.width));
+             y = Math.max(0, Math.min(y, canvas.height));
+            return { x, y };
+        }
+
+        function startScratch(event) {
+            if (event.target !== canvas) return;
+            event.preventDefault();
+            isDrawing = true;
+            const { x, y } = getCoords(event);
+            console.log('Scratch Start:', x, y);
+            scratch(x, y);
+        }
+
+        function doScratch(event) {
+            if (!isDrawing) return;
+            event.preventDefault();
+            const { x, y } = getCoords(event);
+            // console.log('Scratching at:', x, y); // Can be very noisy
+            scratch(x, y);
+        }
+
+        function endScratch(event) {
+            if (!isDrawing) return;
+            isDrawing = false;
+            console.log('Scratch End');
+            checkCompletion();
+        }
+
+        function scratch(x, y) {
+             ctx.globalCompositeOperation = 'destination-out';
+             ctx.beginPath();
+             ctx.arc(x, y, SCRATCH_RADIUS, 0, Math.PI * 2, false);
+             ctx.fillStyle = 'rgba(0,0,0,1)';
+             ctx.fill();
+             // console.log(`Erasing at ${x.toFixed(1)}, ${y.toFixed(1)}`); // Noisy
+        }
+
+        /* --- Completion Check (Basic) --- */
+        function checkCompletion() {
+            console.log("Checking completion (basic)... Prize type:", currentPrize.type);
+            if (currentPrize.type === 'win') {
+                instructionArea.textContent = 'You revealed a winning prize!';
+                convertButton.style.display = 'inline-block'; // Make it take space
+                 // Use timeout to allow display property to apply before transition starts
+                setTimeout(() => {
+                    convertButton.classList.add('visible');
+                    convertButton.disabled = false;
+                }, 10); // Small delay
+                 console.log("Convert button made visible.");
+            } else {
+                 instructionArea.textContent = 'Revealed: ' + currentPrize.name;
+            }
+        }
+
+        /* --- Button Handlers --- */
+        function handleConvert() {
+            alert("Prize conversion requested! (Demo only)");
+            prizeTextElement.textContent = 'Converted!';
+            convertButton.classList.remove('visible');
+            // Use timeout to allow transition before setting display none
+             setTimeout(() => {
+                 convertButton.style.display = 'none';
+             }, 300); // Match CSS transition duration
+            convertButton.disabled = true;
+            instructionArea.textContent = 'Prize converted to points!';
+
+             // Optional: Visually indicate card is used/converted
+             ctx.globalCompositeOperation = 'source-over';
+             ctx.fillStyle = 'rgba(200, 200, 200, 0.7)';
+             ctx.fillRect(0, 0, canvas.width, canvas.height);
+             console.log("Card marked as converted.");
+        }
+
+        function handleNewCard() {
+            console.log('New card requested');
+            // Simply re-initialize the canvas
+            setupCanvas();
+        }
+
+        /* --- Event Listeners --- */
+        convertButton.addEventListener('click', handleConvert);
+        newCardButton.addEventListener('click', handleNewCard); // Listener for the new button
+
+        // Scratching Listeners
+        canvas.addEventListener('mousedown', startScratch);
+        canvas.addEventListener('mousemove', doScratch);
+        window.addEventListener('mouseup', endScratch); // Listen on window
+        canvas.addEventListener('mouseleave', endScratch);
+
+        canvas.addEventListener('touchstart', startScratch, { passive: false });
+        canvas.addEventListener('touchmove', doScratch, { passive: false });
+        canvas.addEventListener('touchend', endScratch);
+        canvas.addEventListener('touchcancel', endScratch);
+
+        /* --- Initial Run --- */
+        window.addEventListener('load', setupCanvas);
+
+         /* --- Resize Handling --- */
+         let resizeTimeout;
+         window.addEventListener('resize', () => {
+             clearTimeout(resizeTimeout);
+             resizeTimeout = setTimeout(() => {
+                  console.log("Resizing...");
+                  setupCanvas(); // Re-initialize on resize
+             }, 250);
+         });
+
+    </script>
+</body>
+</html>
