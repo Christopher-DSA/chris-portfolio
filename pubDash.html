@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PubDash - Demo Dashboard V2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Basic Custom Styles */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        /* --- Core Section Visibility Control --- */
+        #login-section {
+            /* Login is visible by default (using flex for centering) */
+            display: flex; /* Changed default via JS now */
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #dashboard-section {
+            display: none; /* Dashboard is hidden by default */
+        }
+        /* --- End Core Section Visibility Control --- */
+
+        .login-container {
+            max-width: 400px;
+        }
+
+        /* Accordion Customizations */
+        .accordion-button:not(.collapsed) {
+            color: #0c63e4;
+            background-color: #e7f1ff;
+        }
+
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .tier-badge {
+            font-size: 0.8em;
+             /* margin-left is removed - handled by Bootstrap spacing */
+        }
+
+        .dataset-year {
+            font-size: 0.9em;
+            color: #6c757d;
+            font-weight: normal;
+            white-space: nowrap;
+             /* Margin handled by utility class */
+        }
+
+        /* Removed .dataset-meta-wrapper style */
+
+        /* File List Styles */
+        .file-list {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid #eee;
+            background-color: #fff;
+        }
+
+        .file-item:first-child {
+            border-top: 1px solid #eee;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+            margin-bottom: 1rem;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            /* Prevent file info from shrinking too much */
+            min-width: 0; /* Allows shrinking */
+            flex-shrink: 1;
+        }
+        .file-info > div { /* Allow text to wrap */
+            min-width: 0;
+        }
+        .file-info .fw-medium {
+             word-break: break-all; /* Break long filenames */
+        }
+
+
+        .file-actions {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0; /* Prevent actions from shrinking */
+        }
+
+        .file-actions button {
+            margin-left: 0.5rem;
+            white-space: nowrap; /* Prevent button text wrapping */
+        }
+
+        .btn-expired {
+            opacity: 0.75;
+        }
+
+        /* Loading/Error Styles */
+        .loading-placeholder, .error-placeholder {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" id="login-section">
+        <div class="card p-4 shadow-sm login-container text-center">
+            <h3 class="card-title mb-3">PubDash Demo</h3>
+            <i class="fas fa-chart-bar fa-3x text-primary mb-3"></i>
+            <p class="text-muted mb-4">Click below to access the simulated dashboard environment.</p>
+            <button class="btn btn-primary w-100" id="loginButton">
+                <i class="fas fa-sign-in-alt me-2"></i>Enter Demo Dashboard
+            </button>
+            <p class="text-muted text-center small mt-3">No login required. All data is mock data.</p>
+        </div>
+    </div>
+
+    <div id="dashboard-section">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-chart-bar me-2"></i>PubDash <span
+                        class="badge bg-warning text-dark ms-2">Demo</span>
+                </a>
+                <span class="navbar-text text-white-50 me-auto d-none d-lg-inline">
+                    Public Healthcare Data Access Simulation
+                </span>
+                <button class="btn btn-outline-light" id="logoutButton">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </button>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="fas fa-info-circle fa-2x me-3"></i>
+                <div>
+                    Welcome to the PubDash Demo! Explore mock datasets below. Download and refresh actions are simulated
+                    to show functionality. <br>
+                    <span class="fw-bold">Current Date (for context):</span> <span id="current-date">Not set yet</span>
+                </div>
+            </div>
+
+            <h2 class="mb-3">Available Datasets</h2>
+            <p class="text-muted mb-4">Click on a dataset title to expand and view available files.</p>
+
+            <div class="accordion" id="datasetsAccordion">
+                 <div class="loading-placeholder">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading Datasets...</p>
+                 </div>
+            </div>
+        </div>
+
+        <footer class="bg-light text-center text-muted py-3 mt-5">
+            <div class="container">
+                &copy; <span id="current-year"></span> Pubmerge - PubDash Demo V2
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <script>
+        // --- DOM Elements ---
+        const loginSection = document.getElementById('login-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const datasetsAccordionContainer = document.getElementById('datasetsAccordion');
+        const currentDateSpan = document.getElementById('current-date');
+        const currentYearSpan = document.getElementById('current-year');
+
+        // --- Application State ---
+        let isLoggedIn = false; // Simple state variable
+
+        // --- Simulated API Service ---
+        const apiService = {
+            _mockData: [
+                { id: 'ds001', name: 'Hospital Readmission Rates', year: 2023, tier: 'Explorer', description: 'National readmission rates for common conditions.', files: [{ id: 'f001a', name: 'readmissions_q1_2023.csv', size: '15.2 MB', status: 'active', downloadUrl: '#sim-active-link-1' }, { id: 'f001b', name: 'readmissions_q2_2023.parquet', size: '12.8 MB', status: 'active', downloadUrl: '#sim-active-link-2' }, { id: 'f001c', name: 'readmissions_q3_2023.csv', size: '16.1 MB', status: 'expired', downloadUrl: '#sim-expired-link-1' }] },
+                { id: 'ds002', name: 'Healthcare Associated Infections (HAI)', year: 2023, tier: 'Visionary', description: 'State-level data on infections acquired during healthcare.', files: [{ id: 'f002a', name: 'hai_data_2023_full.zip', size: '85.7 MB', status: 'active', downloadUrl: '#sim-active-link-3' }, { id: 'f002b', name: 'hai_summary_report_2023.pdf', size: '2.1 MB', status: 'active', downloadUrl: '#sim-active-link-4' }] },
+                { id: 'ds003', name: 'Medicare Provider Utilization', year: 2022, tier: 'Visionary', description: 'Detailed data on services and procedures provided to Medicare beneficiaries.', files: [{ id: 'f003a', name: 'medicare_utilization_2022_part1.csv', size: '250.3 MB', status: 'expired', downloadUrl: '#sim-expired-link-2' }, { id: 'f003b', name: 'medicare_utilization_2022_part2.csv', size: '280.1 MB', status: 'expired', downloadUrl: '#sim-expired-link-3' }] },
+                { id: 'ds004', name: 'Synthetic Patient Cohort Analysis - A Very Long Name To Test Wrapping Behavior Properly', year: 2024, tier: 'Pioneer', description: 'Advanced synthetic dataset for longitudinal studies (requires Pioneer access).', files: [{ id: 'f004a', name: 'synth_cohort_longitudinal_2024_part_alpha_and_beta_combined_final_release_candidate.arrow', size: '1.2 GB', status: 'active', downloadUrl: '#sim-active-link-5' }, { id: 'f004b', name: 'synth_cohort_metadata.json', size: '0.5 MB', status: 'active', downloadUrl: '#sim-active-link-6' }] },
+                { id: 'ds005', name: 'Emergency Department Visits', year: 2021, tier: 'Explorer', description: 'Aggregated counts of ED visits by reason and demographics.', files: [{ id: 'f005a', name: 'ed_visits_2021_summary.xlsx', size: '5.5 MB', status: 'active', downloadUrl: '#sim-active-link-7' }] }
+            ],
+
+            getDatasets: function () {
+                console.log("API Service: Fetching datasets...");
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        console.log("API Service: Datasets received.");
+                        // Return a deep copy to prevent modification of original mock data
+                        resolve(JSON.parse(JSON.stringify(this._mockData)));
+                    }, 800); // Simulate 800ms delay
+                });
+            },
+
+            refreshFileLink: function (fileId) {
+                console.log(`API Service: Refreshing link for file ${fileId}...`);
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        let foundFile = null;
+                        let changed = false;
+                        // Find and update the file status IN PLACE in the mock data
+                        // Note: In a real app, the backend would handle state change.
+                        // Here we modify our "source of truth" for demo consistency.
+                        this._mockData.forEach(ds => {
+                            const file = ds.files.find(f => f.id === fileId);
+                            if (file && file.status === 'expired') {
+                                file.status = 'active';
+                                file.downloadUrl = `#sim-refreshed-link-${fileId}`;
+                                foundFile = { ...file }; // Return a copy of the updated file info
+                                changed = true;
+                            } else if (file) {
+                                foundFile = { ...file }; // File exists but wasn't expired
+                            }
+                        });
+
+                        if (foundFile && changed) {
+                            console.log(`API Service: Link for ${fileId} refreshed.`);
+                            resolve(foundFile); // Resolve with updated file info
+                        } else if (foundFile) {
+                            console.warn(`API Service: Link for ${fileId} was already active.`);
+                            resolve(foundFile); // Still resolve, but indicate no change needed maybe?
+                        }
+                        else {
+                            console.error(`API Service: File ${fileId} not found.`);
+                            reject(new Error(`File ${fileId} not found.`));
+                        }
+                    }, 750); // Simulate delay
+                });
+            }
+        };
+
+        // --- Helper Functions ---
+
+        function getTierBadgeClass(tier) {
+            switch (tier?.toLowerCase()) { // Added null check
+                case 'explorer': return 'bg-info text-dark';
+                case 'visionary': return 'bg-primary';
+                case 'pioneer': return 'bg-success';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getFileIconClass(filename = '') { // Added default value
+            const extension = filename.split('.').pop().toLowerCase();
+            switch (extension) {
+                case 'csv': return 'fa-file-csv text-success';
+                case 'parquet': return 'fa-file-alt text-primary';
+                case 'zip': return 'fa-file-archive text-warning';
+                case 'pdf': return 'fa-file-pdf text-danger';
+                case 'json': return 'fa-file-code text-secondary';
+                case 'arrow': return 'fa-file-invoice text-info';
+                case 'xlsx': return 'fa-file-excel text-success';
+                default: return 'fa-file text-muted';
+            }
+        }
+
+        /**
+         * Creates the HTML string for a single file item.
+         * @param {object} file - The file object.
+         * @returns {string} HTML string for the file item.
+         */
+        function createFileItemHTML(file) {
+            if (!file) return ''; // Basic validation
+
+            const isExpired = file.status === 'expired';
+            const downloadButtonClass = isExpired ? 'btn-secondary btn-expired' : 'btn-success';
+            const downloadButtonIcon = isExpired ? 'fa-times-circle' : 'fa-download';
+            const downloadButtonText = isExpired ? 'Expired' : 'Download';
+            const downloadButtonTooltip = isExpired ? 'Link Expired - Click Refresh' : `Download ${file.name}`;
+            const downloadButtonDisabled = isExpired ? 'disabled aria-disabled="true"' : '';
+            const fileIconClass = getFileIconClass(file.name);
+
+            const refreshButtonHTML = isExpired
+                ? `<button class="btn btn-sm btn-warning refresh-link-btn" data-file-id="${file.id}" title="Simulate Refreshing Download Link"><i class="fas fa-sync-alt me-1"></i> Refresh</button>`
+                : '';
+
+            return `
+                <div class="file-item" data-file-id="${file.id}">
+                    <div class="file-info">
+                        <i class="fas ${fileIconClass} fa-lg"></i>
+                        <div>
+                           <span class="fw-medium">${file.name || 'Unnamed File'}</span>
+                           <small class="text-muted d-block">(${file.size || 'N/A'})</small>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-sm ${downloadButtonClass} download-btn" data-filename="${file.name}" ${downloadButtonDisabled} title="${downloadButtonTooltip}">
+                           <i class="fas ${downloadButtonIcon} me-1"></i> ${downloadButtonText}
+                        </button>
+                        ${refreshButtonHTML}
+                    </div>
+                </div>`;
+        }
+
+        /**
+         * Renders the datasets into the accordion container.
+         * @param {Array} datasets - Array of dataset objects.
+         */
+        function renderDatasets(datasets = []) { // Expect datasets as argument
+            if (!datasetsAccordionContainer) return;
+
+            datasetsAccordionContainer.innerHTML = ''; // Clear previous content/loading
+
+            if (!Array.isArray(datasets) || datasets.length === 0) {
+                datasetsAccordionContainer.innerHTML = '<p class="error-placeholder">No datasets available.</p>';
+                return;
+            }
+
+            // Sort datasets (e.g., newest first) - consider doing this in service/controller layer in real app
+            datasets.sort((a, b) => (b.year || 0) - (a.year || 0) || (a.name || '').localeCompare(b.name || ''));
+
+            datasets.forEach((dataset) => {
+                if (!dataset || !dataset.id) return; // Skip invalid data
+
+                const accordionItemId = `dataset-collapse-${dataset.id}`;
+                const accordionHeaderId = `dataset-header-${dataset.id}`;
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'accordion-item';
+
+                let filesHtml = '<p class="text-muted small px-3 pt-2">No files available for this dataset.</p>';
+                if (Array.isArray(dataset.files) && dataset.files.length > 0) {
+                    filesHtml = dataset.files.map(file => createFileItemHTML(file)).join('');
+                }
+
+                accordionItem.innerHTML = `
+                    <h2 class="accordion-header" id="${accordionHeaderId}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${accordionItemId}" aria-expanded="false" aria-controls="${accordionItemId}">
+                            <span class="fw-bold me-2">${dataset.name || 'Unnamed Dataset'}</span>
+                            <span class="dataset-year me-2">(${(dataset.year || 'N/A')})</span>
+                            <span class="badge ${getTierBadgeClass(dataset.tier)} tier-badge">${dataset.tier || 'N/A'}</span>
+                        </button>
+                    </h2>
+                    <div id="${accordionItemId}" class="accordion-collapse collapse" aria-labelledby="${accordionHeaderId}" data-bs-parent="#datasetsAccordion">
+                        <div class="accordion-body">
+                            <p class="card-text text-muted mb-3">${dataset.description || 'No description available.'}</p>
+                            <h6 class="mb-2 px-1">Files:</h6>
+                            <div class="file-list">${filesHtml}</div>
+                        </div>
+                    </div>`;
+
+                datasetsAccordionContainer.appendChild(accordionItem);
+            });
+
+            // Re-attach listeners AFTER rendering is complete
+            addEventListenersToButtons();
+        }
+
+         /**
+         * Adds event listeners for download/refresh buttons using event delegation.
+         */
+        function addEventListenersToButtons() {
+            if (!datasetsAccordionContainer) return;
+
+            // Remove existing listener to prevent duplicates if called multiple times
+            datasetsAccordionContainer.removeEventListener('click', handleAccordionButtonClick);
+            // Add the listener
+            datasetsAccordionContainer.addEventListener('click', handleAccordionButtonClick);
+        }
+
+        /**
+         * Handles clicks within the datasets accordion (delegated).
+         * @param {Event} event - The click event object.
+         */
+        function handleAccordionButtonClick(event) {
+            const targetButton = event.target.closest('button');
+            if (!targetButton) return; // Exit if the click wasn't on or inside a button
+
+            const fileItemDiv = targetButton.closest('.file-item');
+            if (!fileItemDiv) return; // Only handle buttons within a file item for now
+
+            const fileId = fileItemDiv.dataset.fileId; // Use dataset from parent div
+            const filename = targetButton.dataset.filename; // Get filename if needed (from download btn)
+
+            // Handle Download Button Click (active only)
+            if (targetButton.classList.contains('download-btn') && !targetButton.disabled) {
+                console.log(`Simulating download for file: ${filename} (ID: ${fileId})`);
+                alert(`Simulating download action for:\n${filename || fileId}`);
+                // In a real app: window.location.href = file.downloadUrl;
+            }
+
+            // Handle Refresh Button Click
+            if (targetButton.classList.contains('refresh-link-btn')) {
+                 console.log(`Simulating refresh request for file ID: ${fileId}`);
+                 const downloadButton = fileItemDiv.querySelector('.download-btn');
+
+                 // Disable refresh button during simulation
+                 targetButton.disabled = true;
+                 targetButton.innerHTML = `<i class="fas fa-spinner fa-spin me-1"></i> Refreshing...`;
+
+                 // Call the API service
+                 apiService.refreshFileLink(fileId)
+                    .then(updatedFile => {
+                        // Update the UI ONLY for this specific file item
+                        if (downloadButton) {
+                            downloadButton.classList.remove('btn-secondary', 'btn-expired');
+                            downloadButton.classList.add('btn-success');
+                            downloadButton.disabled = false;
+                            downloadButton.removeAttribute('aria-disabled');
+                            downloadButton.title = `Download ${updatedFile.name}`;
+                            downloadButton.innerHTML = `<i class="fas fa-download me-1"></i> Download`;
+                            targetButton.remove(); // Remove the refresh button as it's no longer needed
+                            console.log(`UI updated for refreshed file: ${fileId}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Error refreshing file ${fileId}:`, error);
+                        alert(`Error during simulated refresh for file ${fileId}. See console.`);
+                        // Restore refresh button state on error
+                        targetButton.disabled = false;
+                        targetButton.innerHTML = `<i class="fas fa-sync-alt me-1"></i> Refresh`;
+                    });
+            }
+        }
+
+
+        // --- Screen Management Functions ---
+        function showLoginScreen() {
+            loginSection.style.display = 'flex';
+            dashboardSection.style.display = 'none';
+            isLoggedIn = false;
+            console.log('Showing Login Screen');
+        }
+
+        function showDashboardScreen() {
+            loginSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+            isLoggedIn = true;
+            console.log('Showing Dashboard Screen');
+             // Set initial loading state for accordion
+            if (datasetsAccordionContainer) {
+                 datasetsAccordionContainer.innerHTML = `
+                    <div class="loading-placeholder">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading Datasets...</p>
+                    </div>`;
+            }
+             // Update date display (using provided date: April 11, 2025)
+            if (currentDateSpan) {
+                // Use a specific date for consistency in this context
+                 const specificDate = new Date(2025, 3, 11); // Month is 0-indexed (3 = April)
+                 currentDateSpan.textContent = specificDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+        }
+
+        // --- Event Handlers ---
+        function handleLogin() {
+            console.log('Login button clicked');
+            showDashboardScreen();
+
+            // Fetch data using the service AFTER showing the dashboard shell
+            apiService.getDatasets()
+                .then(datasets => {
+                    renderDatasets(datasets); // Render with the fetched data
+                })
+                .catch(error => {
+                    console.error("Error fetching datasets:", error);
+                    if (datasetsAccordionContainer) {
+                         datasetsAccordionContainer.innerHTML = '<p class="error-placeholder text-danger">Could not load datasets. Please try again later.</p>';
+                    }
+                });
+        }
+
+        function handleLogout() {
+            console.log('Logout button clicked');
+            showLoginScreen();
+            // Clear dynamic content from the dashboard
+            if (datasetsAccordionContainer) datasetsAccordionContainer.innerHTML = '';
+        }
+
+        // --- Initial Setup ---
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM ready.');
+
+             // Set initial screen state
+             showLoginScreen(); // Start on the login screen
+
+            // Set footer year
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            } else {
+                console.warn("Could not find 'current-year' span.");
+            }
+
+            // Attach Event Listeners, checking if elements exist first
+            if (loginButton) {
+                loginButton.addEventListener('click', handleLogin);
+                console.log('Login button listener attached.');
+            } else {
+                console.error('Login button not found.');
+            }
+
+            if (logoutButton) {
+                logoutButton.addEventListener('click', handleLogout);
+                console.log('Logout button listener attached.');
+            } else {
+                console.error('Logout button not found.');
+            }
+
+             // Initial attachment of delegated listener for buttons (will be re-attached after render)
+             // addEventListenersToButtons(); // Not strictly needed here as renderDatasets calls it
+        });
+
+        console.log("Script loaded. Waiting for DOMContentLoaded.");
+
+    </script>
+
+</body>
+</html>
