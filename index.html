@@ -284,6 +284,72 @@
             /* Stop the lift animation immediately on hover */
         }
     </style>
+    <style>
+        /* Apply this to the body or a dedicated background container */
+        body {
+            /* --- Essential Styling --- */
+            min-height: 100vh;
+            /* Ensure body covers the full viewport height */
+            background-color: #000;
+            /* Fallback color if gradients aren't supported */
+
+            /* --- The Nebula Gradient (Blue/Cyan Palette WITH Black) --- */
+            background: linear-gradient(
+                    /* Angle of the gradient */
+                    -45deg,
+                    /* Color stops - Including pure black for deep space */
+                    #000000,
+                    /* Start with pure black */
+                    #020f1a,
+                    /* Very Dark Blue */
+                    #0b3c5d,
+                    /* Deep Indigo Blue */
+                    #000000,
+                    /* Weave in black again */
+                    #045a6a,
+                    /* Dark Teal/Cyan */
+                    #02203c,
+                    /* Dark Midnight Blue */
+                    #000000
+                    /* End with pure black for smooth loop */
+                );
+
+            /* --- Make the Gradient Huge --- */
+            /* This gives the gradient "room" to move when we animate position */
+            background-size: 400% 400%;
+
+            /* --- Apply the Animation --- */
+            animation: moveNebula 60s ease infinite;
+            /* 'moveNebula' is the animation name
+                                               '60s' is the duration (long for subtlety)
+                                               'ease' is the timing function (smooth start/end)
+                                               'infinite' makes it loop forever
+                                            */
+
+            /* --- Keep Existing Styles --- */
+            /* Add any other body styles you already have (like text color if applied here) */
+            /* e.g., color: white; font-family: sans-serif; */
+        }
+
+        /* --- Define the Animation Keyframes --- */
+        @keyframes moveNebula {
+            0% {
+                background-position: 0% 50%;
+                /* Start position */
+            }
+
+            50% {
+                background-position: 100% 50%;
+                /* Midpoint position */
+            }
+
+            100% {
+                background-position: 0% 50%;
+                /* End position (same as start for smooth loop) */
+            }
+        }
+    </style>
+
 </head>
 
 <body style="background-color: black;">
@@ -324,7 +390,8 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 text-center">
-                <h1 class="display-3 text-white"><a href="1index.html" class="text-decoration-none text-white">Christopher Demmans</a></h1>
+                <h1 class="display-3 text-white"><a href="1index.html"
+                        class="text-decoration-none text-white">Christopher Demmans</a></h1>
                 <p class="lead text-white">Welcome to my portfolio! Here you can find my work samples.</p>
             </div>
         </div>
@@ -344,7 +411,10 @@
             </div>
         </div>
         <div class="row">
-<spline-viewer hint loading-anim-type="spinner-small-light" url="https://prod.spline.design/NMi1VwZrX91Hdfye/scene.splinecode"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAYAAADISGwcAAAG1ElEQVR4AQCBAH7/AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4B2FVeBVhVXghYVV4KmFVeC5hVXgsYVV4JmFVeBthVXgNYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeARhVXgIAIEAfv8AYVV4B2FVeARhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAVhVXgTYVV4ImFVeC5hVXg3YVV4O2FVeDlhVXgyYVV4J2FVeBlhVXgKYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgCYVV4CWFVeAwAgQB+/wBhVXgRYVV4DmFVeAlhVXgCYVV4AGFVeABhVXgAYVV4AGFVeABhVXgJYVV4FmFVeCVhVXg0YVV4QWFVeEphVXhOYVV4TWFVeEVhVXg6YVV4K2FVeBphVXgKYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAdhVXgOYVV4EQCBAH7/AGFVeBZhVXgUYVV4D2FVeAlhVXgDYVV4AGFVeABhVXgCYVV4CmFVeBZhVXgkYVV4NWFVeERhVXhSYVV4W2FVeF9hVXheYVV4VmFVeEphVXg6YVV4KGFVeBdhVXgIYVV4AGFVeABhVXgAYVV4AGFVeABhVXgCYVV4CWFVeA9hVXgSAIEAfv8AYVV4FGFVeBFhVXgNYVV4CGFVeANhVXgAYVV4AWFVeAVhVXgOYVV4G2FVeCphVXg8YVV4TGFVeFphVXhkYVV4aWFVeGdhVXhfYVV4U2FVeEJhVXgvYVV4HWFVeAxhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgFYVV4CmFVeA0AgQB+/wBhVXgNYVV4CmFVeAZhVXgBYVV4AGFVeABhVXgAYVV4AWFVeAthVXgZYVV4KWFVeDthVXhNYVV4W2FVeGZhVXhrYVV4aWFVeGJhVXhVYVV4RGFVeDBhVXgdYVV4DGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgDYVV4BgCBAH7/AGFVeAdhVXgFYVV4AWFVeABhVXgAYVV4AGFVeABhVXgAYVV4BmFVeBRhVXglYVV4OGFVeElhVXhZYVV4Y2FVeGlhVXhoYVV4YGFVeFNhVXhCYVV4L2FVeBxhVXgLYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgDAIEAfv8AYVV4B2FVeARhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgDYVV4EWFVeCJhVXg0YVV4RWFVeFVhVXhgYVV4ZWFVeGRhVXheYVV4UWFVeEFhVXguYVV4HGFVeAthVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4A2FVeAYAgQB+/wBhVXgLYVV4CGFVeANhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAFhVXgOYVV4HWFVeC9hVXhAYVV4T2FVeFphVXhfYVV4X2FVeFlhVXhNYVV4PmFVeCxhVXgbYVV4C2FVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAVhVXgKYVV4DQCBAH7/AGFVeA9hVXgMYVV4BmFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAdhVXgWYVV4JmFVeDZhVXhFYVV4T2FVeFVhVXhVYVV4T2FVeERhVXg2YVV4JWFVeBVhVXgHYVV4AGFVeABhVXgAYVV4AGFVeABhVXgCYVV4CWFVeA9hVXgSAIEAfv8AYVV4D2FVeAthVXgFYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAphVXgZYVV4KGFVeDVhVXg/YVV4RWFVeEVhVXg/YVV4NWFVeChhVXgZYVV4CmFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgIYVV4DmFVeBEAgQB+/wBhVXgLYVV4B2FVeAFhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAphVXgYYVV4JWFVeC5hVXg0YVV4NGFVeC5hVXglYVV4GGFVeAphVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAJhVXgJYVV4DAGBAH7/AGFVeAdhVXgEYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeA1hVXgaYVV4I2FVeChhVXgoYVV4I2FVeBphVXgNYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeARhVXgIA+gOh6xQ5AUAAAAASUVORK5CYII=" alt="Spline preview" style="width: 100%; height: 100%;"/></spline-viewer>
+            <spline-viewer hint loading-anim-type="spinner-small-light"
+                url="https://prod.spline.design/NMi1VwZrX91Hdfye/scene.splinecode"><img
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAANCAYAAADISGwcAAAG1ElEQVR4AQCBAH7/AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4B2FVeBVhVXghYVV4KmFVeC5hVXgsYVV4JmFVeBthVXgNYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeARhVXgIAIEAfv8AYVV4B2FVeARhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAVhVXgTYVV4ImFVeC5hVXg3YVV4O2FVeDlhVXgyYVV4J2FVeBlhVXgKYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgCYVV4CWFVeAwAgQB+/wBhVXgRYVV4DmFVeAlhVXgCYVV4AGFVeABhVXgAYVV4AGFVeABhVXgJYVV4FmFVeCVhVXg0YVV4QWFVeEphVXhOYVV4TWFVeEVhVXg6YVV4K2FVeBphVXgKYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAdhVXgOYVV4EQCBAH7/AGFVeBZhVXgUYVV4D2FVeAlhVXgDYVV4AGFVeABhVXgCYVV4CmFVeBZhVXgkYVV4NWFVeERhVXhSYVV4W2FVeF9hVXheYVV4VmFVeEphVXg6YVV4KGFVeBdhVXgIYVV4AGFVeABhVXgAYVV4AGFVeABhVXgCYVV4CWFVeA9hVXgSAIEAfv8AYVV4FGFVeBFhVXgNYVV4CGFVeANhVXgAYVV4AWFVeAVhVXgOYVV4G2FVeCphVXg8YVV4TGFVeFphVXhkYVV4aWFVeGdhVXhfYVV4U2FVeEJhVXgvYVV4HWFVeAxhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgFYVV4CmFVeA0AgQB+/wBhVXgNYVV4CmFVeAZhVXgBYVV4AGFVeABhVXgAYVV4AWFVeAthVXgZYVV4KWFVeDthVXhNYVV4W2FVeGZhVXhrYVV4aWFVeGJhVXhVYVV4RGFVeDBhVXgdYVV4DGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgDYVV4BgCBAH7/AGFVeAdhVXgFYVV4AWFVeABhVXgAYVV4AGFVeABhVXgAYVV4BmFVeBRhVXglYVV4OGFVeElhVXhZYVV4Y2FVeGlhVXhoYVV4YGFVeFNhVXhCYVV4L2FVeBxhVXgLYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgDAIEAfv8AYVV4B2FVeARhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgDYVV4EWFVeCJhVXg0YVV4RWFVeFVhVXhgYVV4ZWFVeGRhVXheYVV4UWFVeEFhVXguYVV4HGFVeAthVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4A2FVeAYAgQB+/wBhVXgLYVV4CGFVeANhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAFhVXgOYVV4HWFVeC9hVXhAYVV4T2FVeFphVXhfYVV4X2FVeFlhVXhNYVV4PmFVeCxhVXgbYVV4C2FVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAVhVXgKYVV4DQCBAH7/AGFVeA9hVXgMYVV4BmFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAdhVXgWYVV4JmFVeDZhVXhFYVV4T2FVeFVhVXhVYVV4T2FVeERhVXg2YVV4JWFVeBVhVXgHYVV4AGFVeABhVXgAYVV4AGFVeABhVXgCYVV4CWFVeA9hVXgSAIEAfv8AYVV4D2FVeAthVXgFYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAphVXgZYVV4KGFVeDVhVXg/YVV4RWFVeEVhVXg/YVV4NWFVeChhVXgZYVV4CmFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgIYVV4DmFVeBEAgQB+/wBhVXgLYVV4B2FVeAFhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAphVXgYYVV4JWFVeC5hVXg0YVV4NGFVeC5hVXglYVV4GGFVeAphVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeAJhVXgJYVV4DAGBAH7/AGFVeAdhVXgEYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeA1hVXgaYVV4I2FVeChhVXgoYVV4I2FVeBphVXgNYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeABhVXgAYVV4AGFVeARhVXgIA+gOh6xQ5AUAAAAASUVORK5CYII="
+                    alt="Spline preview" style="width: 100%; height: 100%;" /></spline-viewer>
         </div>
     </div>
 
