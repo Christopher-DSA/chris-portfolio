@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFCraft - Effortless PDF Page Extraction</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* Custom styles complementing Materialize */
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            background-color: #f9f9f9;
+            /* Slightly off-white background */
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        /* --- Navbar & Footer --- */
+        nav {
+            /* Choose a primary color - stick with indigo or change */
+            background-color: #3f51b5;
+            /* indigo */
+        }
+
+        .page-footer {
+            background-color: #3f51b5;
+            /* Match navbar */
+            padding-top: 20px;
+            /* Adjust padding */
+            margin-top: 40px;
+            /* Space above footer */
+        }
+
+        .footer-copyright {
+            background-color: rgba(0, 0, 0, 0.1);
+            /* Darken footer copyright */
+        }
+
+        /* --- Hero Section --- */
+        #hero {
+            padding: 40px 0;
+            background-color: #e8eaf6;
+            /* indigo lighten-5 */
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #hero h2 {
+            font-weight: 300;
+            /* Lighter font weight */
+        }
+
+        /* --- Tool Sections --- */
+        .step-card {
+            padding: 25px 30px !important;
+            /* !important needed sometimes to override card padding */
+            margin-bottom: 25px;
+        }
+
+        .step-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+            color: #3f51b5;
+            /* Use primary color */
+        }
+
+        /* --- Page Selector Enhancements --- */
+        #pageSelector {
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            /* Lighter border */
+            padding: 25px;
+            max-height: 60vh;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            background-color: #fff;
+            /* White background for contrast */
+            border-radius: 4px;
+            justify-content: center;
+            /* Center items if line doesn't fill */
+        }
+
+        .page-item {
+            padding: 15px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 160px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #eeeeee;
+            /* Subtle border */
+            transition: box-shadow 0.2s ease-in-out;
+            /* Smooth hover */
+        }
+
+        .page-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            /* Enhanced hover shadow */
+        }
+
+        .page-item canvas {
+            border: none;
+            /* Remove border from canvas */
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .page-item label span {
+            font-size: 0.9em;
+            /* Slightly smaller text */
+            color: #555;
+        }
+
+        /* Adjust file input button */
+        .file-field .btn {
+            height: 45px;
+            line-height: 45px;
+        }
+
+        .file-field .btn i {
+            line-height: 45px;
+        }
+
+        /* Status Area */
+        #status {
+            margin-top: 25px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            min-height: 50px;
+            white-space: pre-wrap;
+            font-size: 1.05em;
+            /* Slightly larger status text */
+            transition: background-color 0.3s ease;
+        }
+
+        /* Center button */
+        #createPdfButtonContainer {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        #createPdfButton {
+            padding: 0 25px;
+            /* More horizontal padding */
+            height: 45px;
+            line-height: 45px;
+        }
+
+        #createPdfButton i {
+            line-height: 45px;
+        }
+    </style>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="nav-wrapper container">
+                <a href="#" class="brand-logo"><i class="material-icons left hide-on-med-and-down"">filter_none</i>PDFCraft</a>
+                <ul id=" nav-mobile" class="right hide-on-med-and-down">
+                        <li><a href="#hero">Home</a></li>
+                        <!-- <li><a href="#how-it-works">How it Works</a></li>
+                        <li><a href="#">Help</a></li> -->
+                        </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero">
+            <div class="container">
+                <h2>Extract Exactly What You Need from PDFs</h2>
+                <p class="flow-text grey-text text-darken-1">
+                    Quickly select and download specific pages from any PDF document.<br> Simple, fast, and entirely in
+                    your browser.
+                </p>
+            </div>
+        </section>
+
+        <div class="container">
+            <section id="how-it-works">
+                <div class="row">
+                    <div class="col s12 m4">
+                        <div class="card-panel step-card hoverable center-align">
+                            <i class="material-icons step-icon">cloud_upload</i>
+                            <h5>1. Upload Your PDF</h5>
+                            <p class="grey-text text-darken-1">Click below to select the PDF file from your computer.
+                                Your file stays private and is processed locally.</p>
+                            <div class="file-field input-field">
+                                <div class="btn waves-effect waves-light indigo">
+                                    <span>Select PDF</span>
+                                    <input type="file" id="pdfInput" accept=".pdf">
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text" placeholder="No PDF selected"
+                                        readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col s12 m8">
+                        <div class="card-panel step-card hoverable">
+                            <h5 class="center-align">2. Select Pages</h5>
+                            <p class="center-align grey-text text-darken-1">Thumbnails of your PDF pages will appear
+                                below. Check the box for each page you want to include in your new file.</p>
+                            <div id="pageSelectorContainer" style="display: none;">
+                                <div id="pageSelector">
+                                </div>
+                                <div id="createPdfButtonContainer">
+                                    <button id="createPdfButton"
+                                        class="btn-large waves-effect waves-light indigo darken-2" type="button"
+                                        disabled>
+                                        Create New PDF
+                                        <i class="material-icons right">get_app</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div id="status" class="card-panel grey lighten-4 grey-text text-darken-1 center-align">
+                Please select a PDF file to begin.
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">PageCraft</h5>
+                    <p class="grey-text text-lighten-4">Your simple solution for PDF page extraction. All processing is
+                        done securely in your browser.</p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Links</h5>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="#!">Privacy Policy</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Terms of Service</a></li>
+                        <li><a class="grey-text text-lighten-3" href="#!">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                © <span id="copyright-year"></span> PageCraft. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Copyright Year ---
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        // --- Configuration ---
+        const THUMBNAIL_WIDTH = 130; // Keep consistent
+
+        // --- Get references to DOM elements ---
+        const pdfInput = document.getElementById('pdfInput');
+        const pageSelectorContainer = document.getElementById('pageSelectorContainer');
+        const pageSelectorDiv = document.getElementById('pageSelector');
+        const createPdfButton = document.getElementById('createPdfButton');
+        const statusDiv = document.getElementById('status');
+        const filePathInput = document.querySelector('.file-path'); // *** ADD THIS LINE ***
+
+
+        // --- Access pdf-lib & pdf.js functions ---
+        const { PDFDocument } = PDFLib;
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+        } else {
+            console.error("PDF.js library (pdfjsLib) not found.");
+            updateStatus("Error: PDF rendering library failed to load.", "error");
+        }
+
+        // --- Global variables ---
+        let loadedPdfBytes = null;
+        let originalFilename = 'document';
+
+        // --- Helper Function to Update Status ---
+        function updateStatus(message, type = "info") {
+            statusDiv.textContent = message;
+            // Updated classes for card-panel styling
+            statusDiv.className = `card-panel center-align ${type === 'error' ? 'red lighten-4 red-text text-darken-4' :
+                    type === 'success' ? 'green lighten-4 green-text text-darken-4' :
+                        type === 'processing' ? 'blue lighten-5 blue-text text-darken-2 pulse' : // Added pulse for processing
+                            'grey lighten-4 grey-text text-darken-1' // Default info
+                }`;
+        }
+
+        // --- Helper Function to Download Blob --- (No changes)
+        function downloadBlob(bytes, filename, mimeType) { /* ... same as before ... */
+            const blob = new Blob([bytes], { type: mimeType });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- Function to Render Page Thumbnail --- (No changes, using updated error style)
+        async function renderPageThumbnail(pdfDoc, pageNum, canvasId) { /* ... same as before, uses Materialize font in error ... */
+            try {
+                const page = await pdfDoc.getPage(pageNum);
+                const viewport = page.getViewport({ scale: 1.0 });
+                const scale = THUMBNAIL_WIDTH / viewport.width;
+                const scaledViewport = page.getViewport({ scale: scale });
+
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                const context = canvas.getContext('2d');
+                canvas.height = scaledViewport.height;
+                canvas.width = scaledViewport.width;
+
+                const renderContext = { canvasContext: context, viewport: scaledViewport };
+                await page.render(renderContext).promise;
+            } catch (renderError) {
+                console.error(`Error rendering page ${pageNum}:`, renderError);
+                const canvas = document.getElementById(canvasId);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = THUMBNAIL_WIDTH;
+                    canvas.height = THUMBNAIL_WIDTH * 1.4;
+                    ctx.fillStyle = '#ffebee';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#b71c1c';
+                    ctx.font = '12px Roboto, sans-serif'; // Ensure Materialize font stack
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Render Error', canvas.width / 2, canvas.height / 2);
+                }
+            }
+        }
+
+        // --- Event Listener for File Input --- (Logic same, updates status)
+        pdfInput.addEventListener('change', async (event) => { /* ... same core logic ... */
+            const file = event.target.files[0];
+
+            // *** UPDATE THE FILE PATH INPUT DISPLAY ***
+            if (file) {
+                // A file IS selected
+                filePathInput.value = file.name; // Show the selected filename
+            } else {
+                // No file selected (e.g., user cancelled)
+                filePathInput.value = ''; // Clear the display field
+                // Optionally Reset the rest of the UI if needed
+                updateStatus('No file selected. Please select a PDF.', 'info'); // Update status
+                pageSelectorContainer.style.display = 'none'; // Hide selector
+                pageSelectorDiv.innerHTML = ''; // Clear old thumbs
+                createPdfButton.disabled = true; // Disable button
+                loadedPdfBytes = null; // Clear stored data
+                return; // IMPORTANT: Stop further execution in this function
+            }
+            // *** END FILE PATH UPDATE ***
+
+
+            // --- Now, continue only if a file was actually selected ---
+            // Check for PDF.js library (can stay here)
+            if (typeof pdfjsLib === 'undefined') {
+                updateStatus('PDF Rendering Library Error.', 'error');
+                filePathInput.value = ''; // Clear display if lib error
+                return;
+            }
+
+
+            originalFilename = file.name.replace(/\.[^/.]+$/, "");
+            updateStatus('Reading file...', 'processing');
+            pageSelectorContainer.style.display = 'none';
+            pageSelectorDiv.innerHTML = '';
+            createPdfButton.disabled = true;
+            loadedPdfBytes = null;
+
+            try {
+                const fileBuffer = await file.arrayBuffer();
+                loadedPdfBytes = fileBuffer.slice(0); // Store COPY
+
+                updateStatus('Loading PDF for thumbnails...', 'processing');
+                const pdfJsDoc = await pdfjsLib.getDocument({ data: fileBuffer }).promise;
+                const totalPages = pdfJsDoc.numPages;
+
+                updateStatus(`Generating ${totalPages} page thumbnails...`, 'processing');
+
+                const renderPromises = [];
+                for (let i = 0; i < totalPages; i++) { // Generate UI items
+                    const pageNum = i + 1;
+                    const pageIndex = i;
+                    const canvasId = `canvas-page-${pageNum}`;
+                    const checkboxId = `page-checkbox-${pageNum}`;
+
+                    const pageItem = document.createElement('div');
+                    pageItem.className = 'page-item z-depth-1 hoverable'; // Materialize classes
+
+                    const canvas = document.createElement('canvas');
+                    canvas.id = canvasId;
+                    canvas.width = THUMBNAIL_WIDTH;
+                    canvas.height = THUMBNAIL_WIDTH * 1.414;
+
+                    const label = document.createElement('label');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = checkboxId;
+                    checkbox.value = pageIndex;
+                    checkbox.className = "filled-in indigo-checkbox"; // Can add custom color class if needed
+
+                    const span = document.createElement('span');
+                    span.textContent = `Page ${pageNum}`;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+
+                    pageItem.appendChild(canvas);
+                    pageItem.appendChild(label);
+                    pageSelectorDiv.appendChild(pageItem);
+
+                    renderPromises.push(renderPageThumbnail(pdfJsDoc, pageNum, canvasId));
+                }
+
+                await Promise.all(renderPromises);
+
+                updateStatus(`PDF loaded (${totalPages} pages). Select pages and click 'Create'.`, 'info');
+                pageSelectorContainer.style.display = 'block';
+                createPdfButton.disabled = false;
+
+            } catch (error) {
+                console.error("PDF Loading/Rendering Error:", error);
+                updateStatus(`Error processing PDF: ${error.message}.`, 'error');
+                loadedPdfBytes = null;
+                pageSelectorContainer.style.display = 'none';
+            }
+        });
+
+        // --- Event Listener for Create PDF Button --- (Logic same, uses updateStatus)
+        createPdfButton.addEventListener('click', async () => { /* ... same core logic ... */
+            if (!loadedPdfBytes) { /* ... */ return; }
+            const checkedBoxes = pageSelectorDiv.querySelectorAll('input[type="checkbox"]:checked');
+            if (checkedBoxes.length === 0) { /* ... */ return; }
+
+            updateStatus('Creating new PDF...', 'processing');
+            createPdfButton.disabled = true;
+
+            try {
+                const selectedPageIndices = Array.from(checkedBoxes)
+                    .map(cb => parseInt(cb.value, 10))
+                    .sort((a, b) => a - b);
+
+                const pdfDoc = await PDFDocument.load(loadedPdfBytes);
+                const newPdfDoc = await PDFDocument.create();
+                const copiedPages = await newPdfDoc.copyPages(pdfDoc, selectedPageIndices);
+                copiedPages.forEach(page => newPdfDoc.addPage(page));
+                const newPdfBytes = await newPdfDoc.save();
+
+                const outputFilename = `${originalFilename}_selected_pages.pdf`;
+                downloadBlob(newPdfBytes, outputFilename, 'application/pdf');
+
+                updateStatus(`Success! PDF with ${selectedPageIndices.length} pages created. Download: ${outputFilename}`, 'success');
+
+            } catch (error) {
+                console.error("PDF Creation Error:", error);
+                updateStatus(`Error creating PDF: ${error.message}`, 'error');
+            } finally {
+                createPdfButton.disabled = false;
+            }
+        });
+
+        // Optional: Initialize Materialize components if using features like dropdowns, modals etc.
+        // document.addEventListener('DOMContentLoaded', function() {
+        //    M.AutoInit();
+        // });
+
+    </script>
+
+</body>
+
+</html>
